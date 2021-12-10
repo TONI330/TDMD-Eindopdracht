@@ -107,7 +107,7 @@ class PhotonApiManager(private val requestHandler: RequestHandler) {
         val geometryObject = firstFeature.getJSONObject("geometry")
         val coordinatesArray = geometryObject.getJSONArray("coordinates")
 
-        return Point(coordinatesArray.getDouble(1), coordinatesArray.getDouble(0), 0)
+        return Point(coordinatesArray.getDouble(0), coordinatesArray.getDouble(1), "0")
     }
 
     private fun extractStreetName(jsonObject: JSONObject): String? {

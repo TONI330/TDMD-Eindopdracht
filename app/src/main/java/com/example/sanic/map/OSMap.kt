@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.util.Log
+import com.example.sanic.Point
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import org.osmdroid.api.IGeoPoint
@@ -22,6 +23,8 @@ class OSMap {
     private var context : Context
     private var map : MapView
     private var fusedLocationClient: FusedLocationProviderClient? = null
+
+    private lateinit var startingPoint : Point
 
     constructor(map: MapView, activity: Activity, mapManager: GameManager) {
         this.mapManager = mapManager
@@ -62,6 +65,7 @@ class OSMap {
                 if (task.isSuccessful && task.result != null) {
                     val lastLocation = task.result
                     locationPoint = GeoPoint(lastLocation.latitude, lastLocation.longitude)
+                    this.startingPoint = Point(lastLocation.latitude, lastLocation.longitude, "start")
                     Log.d("debug", "Last location: $locationPoint")
                     map.controller.apply {
                         setCenter(locationPoint)
