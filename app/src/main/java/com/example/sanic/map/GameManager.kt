@@ -1,12 +1,16 @@
 package com.example.sanic.map
 
-class GameManager() {
+class GameManager {
 
-    private val score : Int
-        get() {
-            return score
-        }
+    
 
+    private fun startGpsUpdates() {
+        //TODO get locationmanager to start gps updates
+    }
+
+    private fun setNextCheckPoint() {
+
+    }
 
 
 

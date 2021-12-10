@@ -17,12 +17,14 @@ import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 class OSMap {
 
 
+    private var mapManager: GameManager
     private val activity: Activity
     private var context : Context
     private var map : MapView
     private var fusedLocationClient: FusedLocationProviderClient? = null
 
-    constructor(map: MapView, activity: Activity) {
+    constructor(map: MapView, activity: Activity, mapManager: GameManager) {
+        this.mapManager = mapManager
         this.map = map
         this.activity = activity
         this.context = activity.applicationContext
@@ -30,7 +32,7 @@ class OSMap {
 
 
 
-    public fun start() {
+    fun start() {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
         Configuration.getInstance().load(context, context.getSharedPreferences("osm_config", Context.MODE_PRIVATE))
         setupMaps()
