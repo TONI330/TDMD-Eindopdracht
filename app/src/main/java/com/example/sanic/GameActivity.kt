@@ -106,4 +106,8 @@ class GameActivity : AppCompatActivity() {
         return locationPoint
     }
 
+    fun stopGame(view: android.view.View) {
+        finish()
+    }
+
 }
