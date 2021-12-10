@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".GameActivity">
+    tools:context=".map.GameActivity">
 
     <org.osmdroid.views.MapView android:id="@+id/map"
         app:layout_constraintEnd_toEndOf="parent"
@@ -13,5 +13,18 @@
         app:layout_constraintBottom_toBottomOf="parent"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" />
+
+    <Button
+        android:id="@+id/stop_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.9"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.95"
+        android:text="Stop game"
+        android:onClick="stopGame"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
