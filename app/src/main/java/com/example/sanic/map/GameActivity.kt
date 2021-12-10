@@ -1,4 +1,4 @@
-package com.example.sanic
+package com.example.sanic.map
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -25,50 +25,17 @@ import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 class GameActivity : AppCompatActivity() {
 
     private var fusedLocationClient: FusedLocationProviderClient? = null
-    lateinit var binding: ActivityGameBinding
+    private lateinit var binding: ActivityGameBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityGameBinding.inflate(LayoutInflater.from(this))
         setContentView(binding.root)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-        Configuration.getInstance().load(this, getSharedPreferences("osm_config", Context.MODE_PRIVATE))
         //getLastLocation()
-        setupMaps()
-    }
 
-    private fun setupMaps() {
-        setCenterToLastLocation()
-        binding.map.apply{
-            setTileSource(TileSourceFactory.MAPNIK)
-
-            val locationOverlay = MyLocationNewOverlay(GpsMyLocationProvider(this@GameActivity), this)
-            locationOverlay.enableMyLocation()
-            overlays.add(locationOverlay)
-
-            controller.apply {
-                Log.d("debug", "zooming")
-                setZoom(21.0)
-            }
-        }
-    }
-
-    @SuppressLint("MissingPermission")
-    private fun setCenterToLastLocation() {
-        var locationPoint : IGeoPoint?
-        fusedLocationClient!!.lastLocation
-                .addOnCompleteListener(this) { task ->
-                    if (task.isSuccessful && task.result != null) {
-                        val lastLocation = task.result
-                        locationPoint = GeoPoint(lastLocation.latitude, lastLocation.longitude)
-                        Log.d("debug", "Last location: $locationPoint")
-                        binding.map.controller.apply {
-                            setCenter(locationPoint)
-                        }
-                    } else {
-                        Log.w("debug", "getLastLocation:exception", task.exception)
-                    }
-                }
+        val map = OSMap(binding.map, this)
+        map.start()
     }
 
     @Nullable
@@ -95,9 +62,9 @@ class GameActivity : AppCompatActivity() {
         Log.d("debug", "getting location..")
 
         val token = CancellationTokenSource()
-        val locationPoint : IGeoPoint? = null
+        var locationPoint : IGeoPoint? = null
         fusedLocationClient?.getCurrentLocation(LocationRequest.PRIORITY_HIGH_ACCURACY, token.token)?.addOnSuccessListener { location ->
-            locationPoint.let { GeoPoint(location.latitude, location.longitude) }
+            locationPoint = GeoPoint(location.latitude, location.longitude)
         }
         //Log.d("debug", "Exception: " + currentLocation?.exception)
 
