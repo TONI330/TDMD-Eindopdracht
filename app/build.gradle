@@ -26,7 +26,7 @@ android {
     }
 
     buildFeatures {
-        viewBinding = true;
+        viewBinding = true
     }
 
     compileOptions {
@@ -47,8 +47,7 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.1.2'
 
     implementation 'com.google.android.gms:play-services-location:19.0.0'
-    implementation 'org.osmdroid:osmdroid-android:6.1.10'
-
+    implementation 'org.osmdroid:osmdroid-android:6.1.11'
 
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
