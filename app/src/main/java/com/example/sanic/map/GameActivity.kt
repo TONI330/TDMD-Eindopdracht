@@ -2,7 +2,6 @@ package com.example.sanic.map
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -10,32 +9,53 @@ import android.util.Log
 import android.view.LayoutInflater
 import androidx.annotation.Nullable
 import androidx.core.app.ActivityCompat
+import com.example.sanic.Point
 import com.example.sanic.databinding.ActivityGameBinding
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.CancellationTokenSource
 import org.osmdroid.api.IGeoPoint
-import org.osmdroid.config.Configuration
-import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
-import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
-import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 
 class GameActivity : AppCompatActivity() {
 
     private var fusedLocationClient: FusedLocationProviderClient? = null
     private lateinit var binding: ActivityGameBinding
+    private lateinit var testRandomPoint : RandomPoint
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityGameBinding.inflate(LayoutInflater.from(this))
         setContentView(binding.root)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-        //getLastLocation()
+        getLastLocation()
+        testRandomPoint = RandomPoint(Point(51.7704, 4.9219, "test"))
+    }
 
-        val map = OSMap(binding.map, this)
+    private fun startMap(startPoint : Point) {
+        val gameManager = GameManager(startPoint)
+        val map = OSMap(binding.map, this, gameManager)
         map.start()
+    }
+
+
+    @SuppressLint("MissingPermission")
+    private fun getLastLocation() {
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+        fusedLocationClient!!.lastLocation
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful && task.result != null) {
+                    val lastLocation = task.result
+                    startMap(Point(lastLocation.latitude, lastLocation.longitude, "start"))
+                } else {
+                    Log.w("debug", "getLastLocation:exception" + task.exception.toString())
+                }
+            }
+    }
+
+    fun stopGame(view: android.view.View) {
+        finish()
     }
 
     @Nullable
@@ -73,8 +93,10 @@ class GameActivity : AppCompatActivity() {
         return locationPoint
     }
 
-    fun stopGame(view: android.view.View) {
-        finish()
+    fun generateRandom(view: android.view.View) {
+        val randomPoint  = testRandomPoint.getRandomPoint(50.0)
+        Log.d("random", "Point found: $randomPoint")
     }
+
 
 }
