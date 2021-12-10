@@ -14,13 +14,15 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-//        val requestHandler = VolleyRequestHandler(this)
-//        val photonApiManager = PhotonApiManager(requestHandler)
-//        val point = Point(51.594,4.764,0)
-//
-//        photonApiManager.getClosestStreet(point) {
-//            Log.i("MainActivity", "onCreate: $point")
-//        }
+        val requestHandler = VolleyRequestHandler(this)
+        val photonApiManager = PhotonApiManager(requestHandler)
+
+
+        val point = Point(51.414180,5.514767,0)
+
+        photonApiManager.getClosestStreet(point) {
+            Log.i("LocationFound", "onCreate: original: $point corrected: $it")
+        }
 
 
     }

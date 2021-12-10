@@ -3,6 +3,7 @@ package com.example.sanic.api
 import android.util.Log
 import com.example.sanic.Point
 import org.json.JSONObject
+import kotlin.math.log
 
 class PhotonApiManager(private val requestHandler: RequestHandler) {
 
@@ -32,55 +33,102 @@ class PhotonApiManager(private val requestHandler: RequestHandler) {
                 getPointFromStreetName(streetlistener, extractStreetName, extractLocation)
                 return
             }
-            getClosestStreet(extractLocation,streetlistener)
+            val extractExtendLocation = extractExtendLocation(response)
+
+            if (extractExtendLocation == null) {
+                streetlistener.onStreetFound(null)
+                return
+            }
+            getClosestStreet(extractExtendLocation,streetlistener)
+
         }
     }
 
 
 
+
+    private var lastPoint: Point = Point(0.0,0.0,0)
+    private fun extractExtendLocation(jsonObject: JSONObject) : Point?
+    {
+        val extractProperties = extractFirstProperties(jsonObject)
+        if (extractProperties == null || !extractProperties.has("extent")) {
+            return null
+        }
+        val coordinatesArray = extractProperties.getJSONArray("extent")
+
+        val lat = (coordinatesArray.getDouble(1) + coordinatesArray.getDouble(3)) / 2.0
+        val lon = (coordinatesArray.getDouble(0) + coordinatesArray.getDouble(2)) / 2.0
+        val point = Point(lat, lon, 0)
+
+        if (point.lat == lastPoint.lat && point.lon == lastPoint.lon)
+            return null
+
+        lastPoint = point
+
+        Log.i("LocationFound", "bullshit $point")
+        return point
+    }
+
+    private fun extractedType(response: JSONObject): String?
+    {
+        val jsonObject = extractFirstProperties(response) ?: return null
+        if (!jsonObject.has("type")) {
+            return null
+        }
+        return jsonObject.getString("type")
+    }
+
+
     private fun checkValidLocation(response: JSONObject): Boolean {
-        val extractStreetName = extractStreetName(response)
-        val validLocation = extractStreetName.equals("street")
+        val type = extractedType(response) ?: return false
+
+        val validLocation = type.equals("street")
         Log.i("PhotonApiManager", "onResponse: $response valid: $validLocation")
         return validLocation
     }
 
-    private fun extractFirstProperties(jsonObject: JSONObject): JSONObject {
-        val firstFeature = extractFirstFeature(jsonObject)
+    private fun extractFirstProperties(jsonObject: JSONObject): JSONObject? {
+        val firstFeature = extractFirstFeature(jsonObject) ?: return null
         return firstFeature.getJSONObject("properties")
     }
 
 
-    private fun extractFirstFeature(jsonObject: JSONObject): JSONObject {
+    private fun extractFirstFeature(jsonObject: JSONObject): JSONObject? {
         val featuresArray = jsonObject.getJSONArray("features")
+        if (featuresArray.length() == 0)
+            return null
+
         return featuresArray.getJSONObject(0)
     }
 
-    private fun extractLocation(jsonObject: JSONObject): Point {
-        val firstFeature = extractFirstFeature(jsonObject)
+    private fun extractLocation(jsonObject: JSONObject): Point? {
+        val firstFeature = extractFirstFeature(jsonObject) ?: return null
 
         val geometryObject = firstFeature.getJSONObject("geometry")
         val coordinatesArray = geometryObject.getJSONArray("coordinates")
 
-        return Point(coordinatesArray.getDouble(0), coordinatesArray.getDouble(1), 0)
+        return Point(coordinatesArray.getDouble(1), coordinatesArray.getDouble(0), 0)
     }
 
     private fun extractStreetName(jsonObject: JSONObject): String? {
-        val extractedProperties = extractFirstProperties(jsonObject)
-        if (!extractedProperties.has("street")) {
-            return null
-        }
-        return extractedProperties.getString("street")
+        val extractedProperties = extractFirstProperties(jsonObject) ?: return null
+
+        if (extractedProperties.has("street"))
+            return extractedProperties.getString("street")
+
+        if (extractedProperties.has("name") && !extractedProperties.has("extent"))
+            return extractedProperties.getString("name")
+
+        return null
     }
 
 
     private fun getPointFromStreetName(streetlistener: Streetlistener, streetName: String?, point: Point?) {
         val url: String
         if (point == null)
-            url = "http://photon.komoot.io/api?q=$streetName&osm_tag=highway"
+            url = "https://photon.komoot.io/api?q=$streetName&osm_tag=highway"
         else
-            url =
-                "http://photon.komoot.io/api?q=$streetName&lat=${point.lat}&lon=${point.lon}&osm_tag=highway"
+            url = "https://photon.komoot.io/api?q=$streetName&lat=${point.lat}&lon=${point.lon}&osm_tag=highway"
 
         val responseListener = object : ResponseListener {
             override fun onResponse(response: JSONObject) {
