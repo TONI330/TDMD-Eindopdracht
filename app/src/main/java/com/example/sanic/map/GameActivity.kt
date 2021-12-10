@@ -10,6 +10,8 @@ import android.view.LayoutInflater
 import androidx.annotation.Nullable
 import androidx.core.app.ActivityCompat
 import com.example.sanic.Point
+import com.example.sanic.api.PhotonApiManager
+import com.example.sanic.api.VolleyRequestHandler
 import com.example.sanic.databinding.ActivityGameBinding
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationRequest
@@ -22,7 +24,8 @@ class GameActivity : AppCompatActivity() {
 
     private var fusedLocationClient: FusedLocationProviderClient? = null
     private lateinit var binding: ActivityGameBinding
-    private lateinit var testRandomPoint : RandomPoint
+    private lateinit var testRandomPointGenerator : RandomPointGenerator
+    private lateinit var openStreetMap : OSMap
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,13 +33,13 @@ class GameActivity : AppCompatActivity() {
         setContentView(binding.root)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         getLastLocation()
-        testRandomPoint = RandomPoint(Point(51.7704, 4.9219, "test"))
+        testRandomPointGenerator = RandomPointGenerator(Point(51.7704, 4.9219, "test"), PhotonApiManager(VolleyRequestHandler(this)))
     }
 
     private fun startMap(startPoint : Point) {
         val gameManager = GameManager(startPoint)
-        val map = OSMap(binding.map, this, gameManager)
-        map.start()
+        this.openStreetMap = OSMap(binding.map, this, gameManager, startPoint)
+        openStreetMap.start()
     }
 
 
@@ -94,8 +97,12 @@ class GameActivity : AppCompatActivity() {
     }
 
     fun generateRandom(view: android.view.View) {
-        val randomPoint  = testRandomPoint.getRandomPoint(50.0)
-        Log.d("random", "Point found: $randomPoint")
+        testRandomPointGenerator.getRandomSnappedPoint(300.0, PointListener { point ->
+            point.toGeoPoint()?.let {
+                openStreetMap.drawCheckPoint(it)
+                Log.d("random", "Point found: $it")
+            }
+        })
     }
 
 

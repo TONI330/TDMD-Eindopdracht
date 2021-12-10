@@ -5,11 +5,11 @@ import com.example.sanic.Point
 class GameManager {
 
     private var startingPoint : Point
-    private var randomPoint : RandomPoint
+    //private var randomPoint : RandomPoint
 
     constructor(startingPoint: Point) {
         this.startingPoint = startingPoint
-         randomPoint = RandomPoint(startingPoint)
+         //randomPoint = RandomPoint(startingPoint)
     }
 
     private fun startGpsUpdates() {
@@ -17,7 +17,7 @@ class GameManager {
     }
 
     private fun setNextCheckPoint() {
-        randomPoint.getRandomPoint(50.0)
+        //randomPoint.getRandomPoint(50.0)
     }
 
 

@@ -12,6 +12,7 @@ import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
+import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 
@@ -21,14 +22,15 @@ class OSMap {
     private var mapManager: GameManager
     private val activity: Activity
     private var context : Context
-    private var map : MapView
+    private var mapView : MapView
     private var fusedLocationClient: FusedLocationProviderClient? = null
 
     private lateinit var startingPoint : Point
 
-    constructor(map: MapView, activity: Activity, mapManager: GameManager) {
+    constructor(map: MapView, activity: Activity, mapManager: GameManager, startPoint: Point) {
+        this.startingPoint = startPoint
         this.mapManager = mapManager
-        this.map = map
+        this.mapView = map
         this.activity = activity
         this.context = activity.applicationContext
     }
@@ -42,19 +44,26 @@ class OSMap {
     }
 
     private fun setupMaps() {
-        setCenterToLastLocation()
-        map.apply{
+        //setCenterToLastLocation()
+        mapView.apply{
             setTileSource(TileSourceFactory.MAPNIK)
 
-            val locationOverlay = MyLocationNewOverlay(GpsMyLocationProvider(context), map)
+            val locationOverlay = MyLocationNewOverlay(GpsMyLocationProvider(context), mapView)
             locationOverlay.enableMyLocation()
             overlays.add(locationOverlay)
 
             controller.apply {
                 Log.d("debug", "zooming")
                 setZoom(21.0)
+                setCenter(startingPoint.toGeoPoint())
             }
         }
+    }
+
+    fun drawCheckPoint(point: IGeoPoint) {
+        val checkPoint = Marker(mapView)
+        checkPoint.position = point as GeoPoint?
+        mapView.overlays.add(checkPoint)
     }
 
     @SuppressLint("MissingPermission")
@@ -65,9 +74,9 @@ class OSMap {
                 if (task.isSuccessful && task.result != null) {
                     val lastLocation = task.result
                     locationPoint = GeoPoint(lastLocation.latitude, lastLocation.longitude)
-                    this.startingPoint = Point(lastLocation.latitude, lastLocation.longitude, "start")
+                    //this.startingPoint = Point(lastLocation.latitude, lastLocation.longitude, "start")
                     Log.d("debug", "Last location: $locationPoint")
-                    map.controller.apply {
+                    mapView.controller.apply {
                         setCenter(locationPoint)
                     }
                 } else {
@@ -75,5 +84,7 @@ class OSMap {
                 }
             }
     }
+
+
 
 }

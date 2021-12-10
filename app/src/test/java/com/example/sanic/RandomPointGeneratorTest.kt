@@ -1,22 +1,23 @@
 package com.example.sanic
 
-import com.example.sanic.map.RandomPoint
+import com.example.sanic.map.RandomPointGenerator
 import org.junit.Test
 import kotlin.math.cos
 
-class RandomPointTest {
+class RandomPointGeneratorTest {
 
     @Test
     fun latInRange() {
         //arrange
-        val testRandomPoint = RandomPoint(Point(50.0, 4.0, "test"))
+        val testRandomPoint = RandomPointGenerator(Point(50.0, 4.0, "test"))
         var testsFailed = 0
 
         //act
         for (i in 1..100) {
-            val actualPoint = testRandomPoint.getRandomPoint(50.0)
-            println("Testpoint $i: $actualPoint")
-            testsFailed += latValid(actualPoint, 50.0)
+            testRandomPoint.getRandomPoint(50.0).apply {
+                println("Testpoint $i: $this")
+                testsFailed += latValid(this, 50.0)
+            }
         }
 
         //assert
@@ -35,14 +36,21 @@ class RandomPointTest {
     @Test
     fun lonInRange() {
         //arrange
-        val testRandomPoint = RandomPoint(Point(50.0, 4.0, "test"))
+        val testRandomPoint = RandomPointGenerator(Point(50.0, 4.0, "test"))
         var testsFailed = 0
 
         //act
         for (i in 1..100) {
-            val actualPoint = testRandomPoint.getRandomPoint(50.0)
-            println("Testpoint $i: $actualPoint")
-            testsFailed += lonValid(actualPoint, 50.0)
+//            testRandomPoint.getRandomPoint(50.0, PointListener { point ->
+//                println("Testpoint $i: $point")
+//                testsFailed += lonValid(point, 50.0)
+//            })
+
+            testRandomPoint.getRandomPoint(50.0).apply{
+                println("Testpoint $i: $this")
+                testsFailed += lonValid(this, 50.0)
+            }
+
         }
 
         //assert

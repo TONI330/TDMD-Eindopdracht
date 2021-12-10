@@ -1,0 +1,5 @@
+-Miss leuk om 2 settings te maken: een blijf op dezelfde plek (alle random punten vanaf het startpunt) en een wander away mode,
+ waarmee je random punten een bepaalde afstand van je vorige checkpoint zitten
+
+-Een settings menu waarmee je al je instellingen opslaat en ophaalt vanuit je keyvaluestorage
+

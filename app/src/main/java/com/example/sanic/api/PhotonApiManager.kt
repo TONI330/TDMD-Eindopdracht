@@ -3,43 +3,42 @@ package com.example.sanic.api
 import android.util.Log
 import com.example.sanic.Point
 import org.json.JSONObject
-import kotlin.math.log
 
 class PhotonApiManager(private val requestHandler: RequestHandler) {
 
-    fun getClosestStreet(point: Point, streetlistener: Streetlistener) {
+    fun getClosestStreet(point: Point, streetListener: StreetListener) {
 
         val url = "https://photon.komoot.io/reverse?lat=${point.lat}&lon=${point.lon}"
         val responseListener = object : ResponseListener {
             override fun onResponse(response: JSONObject) {
-                getValidLocation(response,streetlistener)
+                getValidLocation(response,streetListener)
             }
         }
 
         requestHandler.doRequest(url, responseListener)
     }
 
-    private fun getValidLocation(response: JSONObject, streetlistener: Streetlistener)
+    private fun getValidLocation(response: JSONObject, streetListener: StreetListener)
     {
         val validLocation = checkValidLocation(response)
         val extractLocation = extractLocation(response)
         if (validLocation) {
-            streetlistener.onStreetFound(extractLocation)
+            streetListener.onStreetFound(extractLocation)
             return
         }else
         {
             val extractStreetName = extractStreetName(response)
             if (extractStreetName != null) {
-                getPointFromStreetName(streetlistener, extractStreetName, extractLocation)
+                getPointFromStreetName(streetListener, extractStreetName, extractLocation)
                 return
             }
             val extractExtendLocation = extractExtendLocation(response)
 
             if (extractExtendLocation == null) {
-                streetlistener.onStreetFound(null)
+                streetListener.onStreetFound(null)
                 return
             }
-            getClosestStreet(extractExtendLocation,streetlistener)
+            getClosestStreet(extractExtendLocation,streetListener)
 
         }
     }
@@ -106,8 +105,8 @@ class PhotonApiManager(private val requestHandler: RequestHandler) {
 
         val geometryObject = firstFeature.getJSONObject("geometry")
         val coordinatesArray = geometryObject.getJSONArray("coordinates")
-
-        return Point(coordinatesArray.getDouble(0), coordinatesArray.getDouble(1), "0")
+        //heb index 0 en 1 omgewisseld omdat lat en long omgedraaid waren, xx Teun
+        return Point(coordinatesArray.getDouble(1), coordinatesArray.getDouble(0), "0")
     }
 
     private fun extractStreetName(jsonObject: JSONObject): String? {
@@ -123,7 +122,7 @@ class PhotonApiManager(private val requestHandler: RequestHandler) {
     }
 
 
-    private fun getPointFromStreetName(streetlistener: Streetlistener, streetName: String?, point: Point?) {
+    private fun getPointFromStreetName(streetListener: StreetListener, streetName: String?, point: Point?) {
         val url: String
         if (point == null)
             url = "https://photon.komoot.io/api?q=$streetName&osm_tag=highway"
@@ -132,7 +131,7 @@ class PhotonApiManager(private val requestHandler: RequestHandler) {
 
         val responseListener = object : ResponseListener {
             override fun onResponse(response: JSONObject) {
-                streetlistener.onStreetFound(extractLocation(response))
+                streetListener.onStreetFound(extractLocation(response))
             }
         }
         requestHandler.doRequest(url, responseListener)

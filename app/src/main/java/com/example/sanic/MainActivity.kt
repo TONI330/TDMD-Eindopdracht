@@ -8,7 +8,6 @@ import android.util.Log
 
 import com.example.sanic.api.VolleyRequestHandler
 import com.example.sanic.api.PhotonApiManager
-import com.example.sanic.api.Streetlistener
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
