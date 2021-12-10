@@ -47,7 +47,7 @@ class PhotonApiManager(private val requestHandler: RequestHandler) {
 
 
 
-    private var lastPoint: Point = Point(0.0,0.0,0)
+    private var lastPoint: Point = Point(0.0,0.0,"0")
     private fun extractExtendLocation(jsonObject: JSONObject) : Point?
     {
         val extractProperties = extractFirstProperties(jsonObject)
@@ -58,7 +58,7 @@ class PhotonApiManager(private val requestHandler: RequestHandler) {
 
         val lat = (coordinatesArray.getDouble(1) + coordinatesArray.getDouble(3)) / 2.0
         val lon = (coordinatesArray.getDouble(0) + coordinatesArray.getDouble(2)) / 2.0
-        val point = Point(lat, lon, 0)
+        val point = Point(lat, lon, "0")
 
         if (point.lat == lastPoint.lat && point.lon == lastPoint.lon)
             return null

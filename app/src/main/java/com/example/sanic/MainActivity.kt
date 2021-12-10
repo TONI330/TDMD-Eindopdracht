@@ -19,7 +19,7 @@ class MainActivity : AppCompatActivity() {
         val photonApiManager = PhotonApiManager(requestHandler)
 
 
-        val point = Point(51.414180,5.514767,0)
+        val point = Point(51.414180,5.514767,"0")
 
         photonApiManager.getClosestStreet(point) {
             Log.i("LocationFound", "onCreate: original: $point corrected: $it")
