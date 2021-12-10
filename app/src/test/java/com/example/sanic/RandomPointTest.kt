@@ -13,8 +13,9 @@ class RandomPointTest {
         var testsFailed = 0
 
         //act
-        for (i in 1..10) {
+        for (i in 1..100) {
             val actualPoint = testRandomPoint.getRandomPoint(50.0)
+            println("Testpoint $i: $actualPoint")
             testsFailed += latValid(actualPoint, 50.0)
         }
 
@@ -24,7 +25,7 @@ class RandomPointTest {
 
     }
 
-    fun latValid(actualPoint: Point, d: Double): Int {
+    private fun latValid(actualPoint: Point, d: Double): Int {
         if(actualPoint.lat > actualPoint.lat + d / 111320 || actualPoint.lat < actualPoint.lat - d * 111320) {
             return 1
         }
@@ -38,8 +39,9 @@ class RandomPointTest {
         var testsFailed = 0
 
         //act
-        for (i in 1..10) {
+        for (i in 1..100) {
             val actualPoint = testRandomPoint.getRandomPoint(50.0)
+            println("Testpoint $i: $actualPoint")
             testsFailed += lonValid(actualPoint, 50.0)
         }
 
@@ -49,7 +51,7 @@ class RandomPointTest {
 
     }
 
-    fun lonValid(actualPoint: Point, d: Double): Int {
+    private fun lonValid(actualPoint: Point, d: Double): Int {
         if(actualPoint.lon > actualPoint.lon + d / (40075000 * (cos(actualPoint.lat) / 360)) ||
             actualPoint.lat < actualPoint.lat - d * (40075000 * (cos(actualPoint.lat) / 360))) {
             return 1
