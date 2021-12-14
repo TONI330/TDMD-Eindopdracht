@@ -41,6 +41,7 @@ class GameActivity : AppCompatActivity() {
     private fun startGame(startPoint: Point) {
         val rndPointGen = RandomPointGenerator(startPoint, PhotonApiManager(VolleyRequestHandler(this)))
         gameManager = GameManager(this, rndPointGen)
+        gameManager.startGpsUpdates()
         this.openStreetMap = OSMap(binding.map, this, gameManager, startPoint)
         openStreetMap.start()
     }
@@ -64,6 +65,7 @@ class GameActivity : AppCompatActivity() {
         finish()
     }
 
+    @SuppressLint("MissingPermission")
     @Nullable
     private fun currentLocation(): IGeoPoint? {
         if (ActivityCompat.checkSelfPermission(
