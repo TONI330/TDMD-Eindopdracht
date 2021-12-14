@@ -57,7 +57,7 @@ class Location(private val context: Context) {
 
                 for (location in locationResult.locations) {
                     //Update location to interface
-                    observer?.onLocationUpdate(Point(location.longitude, location.latitude, null))
+                    observer?.onLocationUpdate(Point(location.latitude, location.longitude, null))
                 }
             }
         }

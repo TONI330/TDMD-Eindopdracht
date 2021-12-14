@@ -62,7 +62,12 @@ class GameManager(private val gameActivity: GameActivity, private val randomPoin
 
     override fun onLocationUpdate(point: Point?) {
         val geoPoint = point?.toGeoPoint()
+
+        if (checkPoints.size == 0)
+            return
+
         val distance = geoPoint?.distanceToAsDouble(checkPoints.last().toGeoPoint())
+        Log.d("location", "Distance: $distance")
         if(distance!! <= geofenceRadius) {
             Log.d("location", "Geofence triggered!")
             generateRandom()
