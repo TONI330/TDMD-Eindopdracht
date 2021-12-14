@@ -1,16 +1,16 @@
 package com.example.sanic.map
 
+import android.util.Log
 import com.example.sanic.Point
+import kotlin.math.log
 
-class GameManager {
 
-    private var startingPoint : Point
-    //private var randomPoint : RandomPoint
+class GameManager(
+    private val gameActivity: GameActivity,
+    private val randomPointGenerator: RandomPointGenerator
+) {
 
-    constructor(startingPoint: Point) {
-        this.startingPoint = startingPoint
-         //randomPoint = RandomPoint(startingPoint)
-    }
+    val checkPoints: ArrayList<Point> = ArrayList()
 
     private fun startGpsUpdates() {
         //TODO get locationmanager to start gps updates
@@ -20,6 +20,36 @@ class GameManager {
         //randomPoint.getRandomPoint(50.0)
     }
 
+    fun checkValid(point: Point): Boolean {
+        for (checkPoint in checkPoints) {
+            if (point.id.equals(checkPoint.id))
+                return false
+        }
+        return true
+    }
+
+    fun tooMuchTries() {
+        Log.d("GameManager", "tooMuchTries: ")
+    }
+
+    var tries: Int = 0
+    fun generateRandom() {
+        randomPointGenerator.getRandomSnappedPoint(500.0) { point ->
+            if (tries > 10) {
+                tries = 0
+                tooMuchTries()
+            } else {
+                if (checkValid(point)) {
+                    tries = 0
+                    checkPoints.add(point)
+                    gameActivity.drawPointOnMap(point)
+                } else {
+                    tries++
+                    generateRandom()
+                }
+            }
+        }
+    }
 
 
 }

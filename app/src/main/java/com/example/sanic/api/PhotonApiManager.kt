@@ -11,6 +11,7 @@ class PhotonApiManager(private val requestHandler: RequestHandler) {
         val url = "https://photon.komoot.io/reverse?lat=${point.lat}&lon=${point.lon}"
         val responseListener = object : ResponseListener {
             override fun onResponse(response: JSONObject) {
+                Log.i("PhotonApiManager", "onResponse: $response")
                 getValidLocation(response,streetListener)
             }
         }
@@ -57,7 +58,7 @@ class PhotonApiManager(private val requestHandler: RequestHandler) {
 
         val lat = (coordinatesArray.getDouble(1) + coordinatesArray.getDouble(3)) / 2.0
         val lon = (coordinatesArray.getDouble(0) + coordinatesArray.getDouble(2)) / 2.0
-        val point = Point(lat, lon, "0")
+        val point = Point(lat, lon, extractStreetName(jsonObject))
 
         if (point.lat == lastPoint.lat && point.lon == lastPoint.lon)
             return null
@@ -81,7 +82,7 @@ class PhotonApiManager(private val requestHandler: RequestHandler) {
     private fun checkValidLocation(response: JSONObject): Boolean {
         val type = extractedType(response) ?: return false
 
-        val validLocation = type.equals("street")
+        val validLocation = type == "street"
         Log.i("PhotonApiManager", "onResponse: $response valid: $validLocation")
         return validLocation
     }
@@ -106,16 +107,21 @@ class PhotonApiManager(private val requestHandler: RequestHandler) {
         val geometryObject = firstFeature.getJSONObject("geometry")
         val coordinatesArray = geometryObject.getJSONArray("coordinates")
         //heb index 0 en 1 omgewisseld omdat lat en long omgedraaid waren, xx Teun
-        return Point(coordinatesArray.getDouble(1), coordinatesArray.getDouble(0), "0")
+        return Point(coordinatesArray.getDouble(1), coordinatesArray.getDouble(0), extractStreetName(jsonObject))
     }
 
     private fun extractStreetName(jsonObject: JSONObject): String? {
         val extractedProperties = extractFirstProperties(jsonObject) ?: return null
 
+        if (checkValidLocation(jsonObject) && extractedProperties.has("postcode"))
+        {
+            return extractedProperties.getString("postcode")
+        }
+
         if (extractedProperties.has("street"))
             return extractedProperties.getString("street")
 
-        if (extractedProperties.has("name") && !extractedProperties.has("extent"))
+        if (extractedProperties.has("name") &&  !extractedProperties.has("extent"))
             return extractedProperties.getString("name")
 
         return null

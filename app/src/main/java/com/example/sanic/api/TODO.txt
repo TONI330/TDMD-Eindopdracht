@@ -3,3 +3,7 @@
 
 -Een settings menu waarmee je al je instellingen opslaat en ophaalt vanuit je keyvaluestorage
 
+-Permissies runtime aanvragen
+
+
+

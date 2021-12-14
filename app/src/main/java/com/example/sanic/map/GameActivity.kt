@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import androidx.annotation.Nullable
 import androidx.core.app.ActivityCompat
 import com.example.sanic.Point
@@ -24,8 +25,10 @@ class GameActivity : AppCompatActivity() {
 
     private var fusedLocationClient: FusedLocationProviderClient? = null
     private lateinit var binding: ActivityGameBinding
-    private lateinit var testRandomPointGenerator : RandomPointGenerator
-    private lateinit var openStreetMap : OSMap
+
+    private lateinit var openStreetMap: OSMap
+    private lateinit var gameManager: GameManager
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,11 +36,11 @@ class GameActivity : AppCompatActivity() {
         setContentView(binding.root)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         getLastLocation()
-        testRandomPointGenerator = RandomPointGenerator(Point(51.7704, 4.9219, "test"), PhotonApiManager(VolleyRequestHandler(this)))
     }
 
-    private fun startMap(startPoint : Point) {
-        val gameManager = GameManager(startPoint)
+    private fun startGame(startPoint: Point) {
+        val rndPointGen = RandomPointGenerator(startPoint, PhotonApiManager(VolleyRequestHandler(this)))
+        gameManager = GameManager(this, rndPointGen)
         this.openStreetMap = OSMap(binding.map, this, gameManager, startPoint)
         openStreetMap.start()
     }
@@ -50,19 +53,19 @@ class GameActivity : AppCompatActivity() {
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful && task.result != null) {
                     val lastLocation = task.result
-                    startMap(Point(lastLocation.latitude, lastLocation.longitude, "start"))
+                    startGame(Point(lastLocation.latitude, lastLocation.longitude, "start"))
                 } else {
                     Log.w("debug", "getLastLocation:exception" + task.exception.toString())
                 }
             }
     }
 
-    fun stopGame(view: android.view.View) {
+    fun stopGame(view: View) {
         finish()
     }
 
     @Nullable
-    private fun currentLocation() : IGeoPoint? {
+    private fun currentLocation(): IGeoPoint? {
         if (ActivityCompat.checkSelfPermission(
                 this,
                 Manifest.permission.ACCESS_FINE_LOCATION
@@ -85,10 +88,11 @@ class GameActivity : AppCompatActivity() {
         Log.d("debug", "getting location..")
 
         val token = CancellationTokenSource()
-        var locationPoint : IGeoPoint? = null
-        fusedLocationClient?.getCurrentLocation(LocationRequest.PRIORITY_HIGH_ACCURACY, token.token)?.addOnSuccessListener { location ->
-            locationPoint = GeoPoint(location.latitude, location.longitude)
-        }
+        var locationPoint: IGeoPoint? = null
+        fusedLocationClient?.getCurrentLocation(LocationRequest.PRIORITY_HIGH_ACCURACY, token.token)
+            ?.addOnSuccessListener { location ->
+                locationPoint = GeoPoint(location.latitude, location.longitude)
+            }
         //Log.d("debug", "Exception: " + currentLocation?.exception)
 
         //val locationPoint = currentLocation?.result?.let { GeoPoint(it.latitude, currentLocation.result.longitude) }
@@ -96,13 +100,16 @@ class GameActivity : AppCompatActivity() {
         return locationPoint
     }
 
-    fun generateRandom(view: android.view.View) {
-        testRandomPointGenerator.getRandomSnappedPoint(300.0, PointListener { point ->
-            point.toGeoPoint()?.let {
-                openStreetMap.drawCheckPoint(it)
-                Log.d("random", "Point found: $it")
-            }
-        })
+
+    fun drawPointOnMap(point: Point) {
+        point.toGeoPoint().run {
+            openStreetMap.drawCheckPoint(this)
+            Log.d("random", "Point found: $this")
+        }
+    }
+
+    fun generateRandom(view: View) {
+        gameManager.generateRandom()
     }
 
 
