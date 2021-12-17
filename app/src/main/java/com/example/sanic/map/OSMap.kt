@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.util.Log
+import androidx.core.content.ContextCompat
 import com.example.sanic.Point
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -15,6 +16,18 @@ import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
+import org.osmdroid.views.overlay.simplefastpoint.SimpleFastPointOverlay
+import org.osmdroid.views.overlay.simplefastpoint.SimpleFastPointOverlayOptions
+import org.osmdroid.views.overlay.simplefastpoint.SimplePointTheme
+import android.graphics.Bitmap
+
+import android.graphics.drawable.BitmapDrawable
+
+import android.graphics.drawable.Drawable
+
+import androidx.core.content.res.ResourcesCompat
+import com.example.sanic.R
+
 
 class OSMap {
 
@@ -25,6 +38,7 @@ class OSMap {
     private var mapView : MapView
     private var fusedLocationClient: FusedLocationProviderClient? = null
 
+    private var checkPoint : Marker? = null
     private lateinit var startingPoint : Point
 
     constructor(map: MapView, activity: Activity, mapManager: GameManager, startPoint: Point) {
@@ -61,9 +75,36 @@ class OSMap {
     }
 
     fun drawCheckPoint(point: IGeoPoint) {
-        val checkPoint = Marker(mapView)
-        checkPoint.position = point as GeoPoint?
-        mapView.overlays.add(checkPoint)
+        mapView.overlays.apply {
+
+
+
+            if(checkPoint != null) remove(checkPoint)
+
+            val marker = Marker(mapView)
+            //marker.icon = ContextCompat.getDrawable(context, R.mipmap.geolocation)
+
+            val d = ResourcesCompat.getDrawable(context.resources, R.mipmap.geolocation, null)
+            val bitmap = (d as BitmapDrawable?)!!.bitmap
+            val dr: Drawable = BitmapDrawable(
+                context.resources,
+                Bitmap.createScaledBitmap(
+                    bitmap,
+                    (48.0 * context.resources.getDisplayMetrics().density).toInt(),
+                    (48.0 * context.resources.getDisplayMetrics().density).toInt(),
+                    true
+                )
+            )
+            marker.icon = dr
+            marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+
+            marker.position = point as GeoPoint?
+            //marker.textLabelBackgroundColor = R.color.common_google_signin_btn_text_dark
+            checkPoint = marker
+            mapView.overlays.add(marker)
+        }
+
+
     }
 
     @SuppressLint("MissingPermission")
