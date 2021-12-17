@@ -18,7 +18,7 @@ import com.google.android.gms.location.GeofencingEvent
 class GameManager(private val gameActivity: GameActivity, private val randomPointGenerator: RandomPointGenerator) :
     LocationObserver {
 
-    var geofenceBroadcastReceiver : BroadcastReceiver = object : BroadcastReceiver() {
+    open var geofenceBroadcastReceiver : BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             //observer?.onNearLocationEntered(GeofencingEvent.fromIntent(intent!!).triggeringGeofences[0])
             Log.d(GeofenceBroadcastReceiver.LOGTAG, "Received a trigger with intent: $intent")
@@ -38,11 +38,7 @@ class GameManager(private val gameActivity: GameActivity, private val randomPoin
         NearLocationManager(gameActivity, geofenceBroadcastReceiver)
 
     fun startGpsUpdates() {
-        val intentFilter = IntentFilter()
-
-
         setNewRandCheckPoint()
-        //TODO get locationmanager to start gps updates
         val location = Location(gameActivity)
         location.start(this)
     }

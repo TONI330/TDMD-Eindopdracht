@@ -15,6 +15,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.SANIC">
+        <receiver android:name=".location.gps.GeofenceBroadcastReceiver"/>
         <activity
             android:name=".map.GameActivity"
             android:exported="false" />

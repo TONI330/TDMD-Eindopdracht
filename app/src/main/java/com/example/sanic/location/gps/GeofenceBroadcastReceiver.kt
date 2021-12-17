@@ -13,12 +13,14 @@ open class GeofenceBroadcastReceiver : BroadcastReceiver() {
         if (geofencingEvent.hasError()) {
             Log.d(LOGTAG, "Geofence error:" + geofencingEvent.errorCode)
         }
+
         for (geofence in geofencingEvent.triggeringGeofences) {
             Log.d(LOGTAG, "Geofence entered: " + geofence.requestId)
 //            if (Location.geofenceBroadcastReceiver != null) Location.geofenceBroadcastReceiver.onReceive(
 //                context,
 //                intent
 //            )
+
         }
     }
 
