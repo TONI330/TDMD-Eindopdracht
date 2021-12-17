@@ -6,38 +6,51 @@
     android:layout_height="match_parent"
     tools:context=".map.GameActivity">
 
-    <org.osmdroid.views.MapView android:id="@+id/map"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+    <org.osmdroid.views.MapView
+        android:id="@+id/map"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+    </org.osmdroid.views.MapView>
+
+    <ImageButton
+        android:id="@+id/imageButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@android:drawable/ic_menu_manage"
+        android:onClick="openSettings"
+        android:contentDescription="@string/settings" />
 
     <Button
         android:id="@+id/stop_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:onClick="stopGame"
+        android:text="@string/stop_game"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.9"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.95"
-        android:text="Stop game"
-        android:onClick="stopGame"/>
+        app:layout_constraintVertical_bias="0.95" />
 
-    <Button
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fragmentContainerView2"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/stop_button"
-        app:layout_constraintHorizontal_bias="0.9"
+        android:layout_height="0dp"
+        android:background="@android:drawable/screen_background_light"
+        app:layout_constraintBottom_toTopOf="@+id/stop_button"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.95"
-        android:text="random"
-        android:onClick="generateRandom"
-        />
+        app:layout_constraintTop_toBottomOf="@+id/imageButton" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
