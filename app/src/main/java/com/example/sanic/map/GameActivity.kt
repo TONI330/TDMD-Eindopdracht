@@ -2,6 +2,7 @@ package com.example.sanic.map
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -41,6 +42,8 @@ class GameActivity : AppCompatActivity() {
     private fun startGame(startPoint: Point) {
         val rndPointGen = RandomPointGenerator(startPoint, PhotonApiManager(VolleyRequestHandler(this)))
         gameManager = GameManager(this, rndPointGen)
+        registerReceiver(gameManager.geofenceBroadcastReceiver, IntentFilter())
+
         gameManager.startGpsUpdates()
         this.openStreetMap = OSMap(binding.map, this, gameManager, startPoint)
         openStreetMap.start()
@@ -111,7 +114,7 @@ class GameActivity : AppCompatActivity() {
     }
 
     fun generateRandom(view: View) {
-        gameManager.generateRandom()
+        gameManager.setNewRandCheckPoint()
     }
 
 

@@ -1,9 +1,10 @@
-package com.example.sanic.location
+package com.example.sanic.location.gps
 
 import android.Manifest
 import android.content.BroadcastReceiver
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import androidx.core.app.ActivityCompat
 import android.content.pm.PackageManager
 import android.os.Looper
@@ -12,7 +13,8 @@ import com.example.sanic.Point
 import com.google.android.gms.location.*
 
 class Location(private val context: Context) {
-    private val geofenceBroadcastReceiver: BroadcastReceiver? = null
+
+    //var geofenceBroadcastReceiver: BroadcastReceiver = GeofenceBroadcastReceiver()
     private var fusedLocationClient: FusedLocationProviderClient
     private var observer: LocationObserver? = null
     fun start(observer: LocationObserver) {
@@ -93,4 +95,5 @@ class Location(private val context: Context) {
         //PermissionManager permissionManager = new PermissionManager
         //permissionManager.getLocationPermissions()
     }
+
 }

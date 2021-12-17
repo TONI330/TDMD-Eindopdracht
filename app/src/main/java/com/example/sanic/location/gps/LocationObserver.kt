@@ -1,4 +1,4 @@
-package com.example.sanic.location
+package com.example.sanic.location.gps
 
 import com.example.sanic.Point
 import com.google.android.gms.location.Geofence
