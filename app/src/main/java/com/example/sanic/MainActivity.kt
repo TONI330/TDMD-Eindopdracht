@@ -3,12 +3,14 @@ package com.example.sanic
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.example.sanic.map.GameActivity
 import android.util.Log
+import com.example.sanic.map.GameActivity
 import android.view.View
+import androidx.fragment.app.add
+import androidx.fragment.app.commit
+import androidx.fragment.app.replace
+import kotlin.math.log
 
-import com.example.sanic.api.VolleyRequestHandler
-import com.example.sanic.api.PhotonApiManager
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,10 +31,23 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-
     fun startGame(view: View) {
         val intent = Intent(this, GameActivity::class.java)
         startActivity(intent)
+    }
+
+    fun openSettingMain(view: View) {
+        Log.d("MainActivity", "openSettingMain: ")
+        val findFragmentByTag = supportFragmentManager.findFragmentByTag("Settings")
+        if (findFragmentByTag != null) {
+            onBackPressed()
+            return
+        }
+        supportFragmentManager.commit {
+            replace<SettingsFragment>(R.id.fragmentContainerView, "Settings")
+            setReorderingAllowed(true)
+            addToBackStack("null")
+        }
     }
 
 }

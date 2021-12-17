@@ -4,8 +4,8 @@ import android.Manifest
 import android.content.BroadcastReceiver
 import android.annotation.SuppressLint
 import android.content.Context
-import androidx.core.app.ActivityCompat
 import android.content.pm.PackageManager
+import androidx.core.app.ActivityCompat
 import android.os.Looper
 import android.util.Log
 import com.example.sanic.Point
@@ -24,7 +24,7 @@ class Location(private val context: Context) {
     @get:SuppressLint("MissingPermission")
     private val lastLocation: Unit
         //you must listen to LocationObserver.onLocationUpdate() for the returnvalue of this method
-        private get() {
+        get() {
             fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
             fusedLocationClient.lastLocation.addOnCompleteListener { task ->
                 if (task.isSuccessful && task.result != null) {
@@ -42,7 +42,7 @@ class Location(private val context: Context) {
             }
         }
     private val locationRequest: LocationRequest
-        private get() {
+        get() {
             val locationRequest = LocationRequest.create()
             locationRequest.interval = 10000
             locationRequest.fastestInterval = 5000
@@ -52,7 +52,7 @@ class Location(private val context: Context) {
 
     //Update location to interface
     private val locationCallback: LocationCallback
-        private get() = object : LocationCallback() {
+        get() = object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult) {
 
                 for (location in locationResult.locations) {

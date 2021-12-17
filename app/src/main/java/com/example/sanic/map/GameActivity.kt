@@ -10,7 +10,13 @@ import android.view.LayoutInflater
 import android.view.View
 import androidx.annotation.Nullable
 import androidx.core.app.ActivityCompat
+import androidx.fragment.app.add
+import androidx.fragment.app.commit
+import androidx.fragment.app.replace
+import com.example.sanic.KeyValueStorage
 import com.example.sanic.Point
+import com.example.sanic.R
+import com.example.sanic.SettingsFragment
 import com.example.sanic.api.PhotonApiManager
 import com.example.sanic.api.VolleyRequestHandler
 import com.example.sanic.databinding.ActivityGameBinding
@@ -29,6 +35,7 @@ class GameActivity : AppCompatActivity() {
     private lateinit var openStreetMap: OSMap
     private lateinit var gameManager: GameManager
 
+    private var pointsUntilGameEnds: Int = 10
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,6 +43,12 @@ class GameActivity : AppCompatActivity() {
         setContentView(binding.root)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         getLastLocation()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        pointsUntilGameEnds = KeyValueStorage.getValue(this, "amountOfPoints")?.toInt() ?: 10
+        Log.d("GameActivity", "onCreate: $pointsUntilGameEnds")
     }
 
     private fun startGame(startPoint: Point) {
@@ -114,6 +127,20 @@ class GameActivity : AppCompatActivity() {
 
     fun generateRandom(view: View) {
         gameManager.generateRandom()
+    }
+
+    fun openSettings(view: View) {
+        Log.d("MainActivity", "openSettingMain: ")
+        val findFragmentByTag = supportFragmentManager.findFragmentByTag("Settings")
+        if (findFragmentByTag != null) {
+            onBackPressed()
+            return
+        }
+        supportFragmentManager.commit {
+            add<SettingsFragment>(R.id.fragmentContainerView2, "Settings")
+            setReorderingAllowed(true)
+            addToBackStack("null")
+        }
     }
 
 

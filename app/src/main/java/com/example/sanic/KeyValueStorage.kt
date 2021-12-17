@@ -3,6 +3,7 @@ package com.example.sanic
 import android.app.Activity
 import android.content.Context
 import androidx.annotation.StringRes
+import androidx.preference.PreferenceManager
 
 object KeyValueStorage {
     fun setValue(activity: Activity, @StringRes stringID: Int, value: String): Boolean {
@@ -12,7 +13,7 @@ object KeyValueStorage {
     fun setValue(activity: Activity, key: String?, newValue: String): Boolean {
         val oldValue = getValue(activity, key)
         if (oldValue == newValue) return false
-        val sharedPref = activity.getPreferences(Context.MODE_PRIVATE)
+        val sharedPref = PreferenceManager.getDefaultSharedPreferences(activity)
         val editor = sharedPref.edit()
         editor.putString(key, newValue)
         editor.apply()
@@ -20,8 +21,8 @@ object KeyValueStorage {
     }
 
     fun getValue(activity: Activity, key: String?): String? {
-        val sharedPref = activity.getPreferences(Context.MODE_PRIVATE)
-        return sharedPref.getString(key, "")
+        val sharedPref = PreferenceManager.getDefaultSharedPreferences(activity)
+        return sharedPref.getString(key, null)
     }
 
     fun getValue(activity: Activity, @StringRes stringID: Int): String? {
