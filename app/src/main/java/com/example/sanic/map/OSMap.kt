@@ -135,8 +135,12 @@ class OSMap {
             }
     }
 
+    private val line = Polyline()
+
     fun drawRoute(points: List<Point>) {
-        val line = Polyline()
+        //remove last line
+        if(mapView.overlayManager.contains(line)) mapView.overlayManager.remove(line)
+
         val mutableList : ArrayList<GeoPoint> = ArrayList()
 
         points.forEach {
