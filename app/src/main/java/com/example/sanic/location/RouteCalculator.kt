@@ -13,7 +13,7 @@ import java.util.*
  */
 class RouteCalculator(private val handler : RequestHandler) {
 
-    private val API_KEY = ""
+    private val API_KEY = "5b3ce3597851110001cf624800ca244e157049a5aa73195ec969c0ae"
     private val URL =
         "https://api.openrouteservice.org/v2/directions/foot-walking?api_key=$API_KEY"
 

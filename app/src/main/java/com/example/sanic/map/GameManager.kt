@@ -119,7 +119,7 @@ class GameManager(
     }
 
     private fun JSONtoPointList(coordinates: JSONArray): List<Point> {
-    val points: MutableList<Point> = ArrayList<Point>()
+    val points: MutableList<Point> = ArrayList()
     for (i in 0 until coordinates.length()) {
         val coordinateArray = coordinates.optJSONArray(i) ?: continue
 
@@ -133,7 +133,7 @@ class GameManager(
         if (longitude == 91.0 || latitude == 91.0) continue
 
         // Creating a GeoPoint based on the latitude and longitude and adding it to the list
-        points.add(Point(longitude, latitude, "route-point"))
+        points.add(Point(latitude, longitude, "route-point"))
     }
 
         // Returning the new list
