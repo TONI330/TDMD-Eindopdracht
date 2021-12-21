@@ -29,7 +29,9 @@ import android.graphics.drawable.Drawable
 
 import androidx.core.content.res.ResourcesCompat
 import com.example.sanic.R
+import org.osmdroid.views.CustomZoomButtonsController
 import org.osmdroid.views.overlay.Polyline
+import org.osmdroid.views.overlay.gestures.RotationGestureOverlay
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -66,6 +68,14 @@ class OSMap {
         //setCenterToLastLocation()
         mapView.apply{
             setTileSource(TileSourceFactory.MAPNIK)
+
+            val rotationGestureOverlay = RotationGestureOverlay(this)
+            rotationGestureOverlay.isEnabled = true
+            setMultiTouchControls(true)
+            overlays.add(rotationGestureOverlay)
+            minZoomLevel = 13.0
+            maxZoomLevel = 21.0
+            zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
 
             val locationOverlay = MyLocationNewOverlay(GpsMyLocationProvider(context), mapView)
             locationOverlay.enableMyLocation()
