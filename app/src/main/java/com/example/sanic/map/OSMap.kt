@@ -20,6 +20,8 @@ import org.osmdroid.views.overlay.simplefastpoint.SimpleFastPointOverlay
 import org.osmdroid.views.overlay.simplefastpoint.SimpleFastPointOverlayOptions
 import org.osmdroid.views.overlay.simplefastpoint.SimplePointTheme
 import android.graphics.Bitmap
+import android.graphics.Color
+import android.graphics.Paint
 
 import android.graphics.drawable.BitmapDrawable
 
@@ -27,6 +29,9 @@ import android.graphics.drawable.Drawable
 
 import androidx.core.content.res.ResourcesCompat
 import com.example.sanic.R
+import org.osmdroid.views.overlay.Polyline
+import java.util.*
+import kotlin.collections.ArrayList
 
 
 class OSMap {
@@ -39,7 +44,7 @@ class OSMap {
     private var fusedLocationClient: FusedLocationProviderClient? = null
 
     private var checkPoint : Marker? = null
-    private lateinit var startingPoint : Point
+    private var startingPoint : Point
 
     constructor(map: MapView, activity: Activity, mapManager: GameManager, startPoint: Point) {
         this.startingPoint = startPoint
@@ -76,14 +81,9 @@ class OSMap {
 
     fun drawCheckPoint(point: IGeoPoint) {
         mapView.overlays.apply {
-
-
-
             if(checkPoint != null) remove(checkPoint)
 
             val marker = Marker(mapView)
-            //marker.icon = ContextCompat.getDrawable(context, R.mipmap.geolocation)
-
             val d = ResourcesCompat.getDrawable(context.resources, R.mipmap.geolocation, null)
             val bitmap = (d as BitmapDrawable?)!!.bitmap
             val dr: Drawable = BitmapDrawable(
@@ -99,7 +99,6 @@ class OSMap {
             marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
 
             marker.position = point as GeoPoint?
-            //marker.textLabelBackgroundColor = R.color.common_google_signin_btn_text_dark
             checkPoint = marker
             mapView.overlays.add(marker)
         }
@@ -126,6 +125,25 @@ class OSMap {
             }
     }
 
+    fun drawRoute(points: List<Point>) {
+        val line = Polyline()
+        val mutableList : ArrayList<GeoPoint> = ArrayList()
+
+        points.forEach {
+            mutableList.add(it.toGeoPoint())
+        }
+        //Creating the line
+        line.apply {
+            outlinePaint.color = Color.BLACK
+            outlinePaint.strokeCap = Paint.Cap.ROUND
+            //Drawing the line
+            setPoints(mutableList)
+        }
+
+        mapView.overlayManager.add(line)
+        mapView.invalidate()
+        Log.d("MapActivity", "Points of the route have been drawn")
+    }
 
 
 }

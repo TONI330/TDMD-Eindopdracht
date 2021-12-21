@@ -20,6 +20,7 @@ import com.example.sanic.SettingsFragment
 import com.example.sanic.api.PhotonApiManager
 import com.example.sanic.api.VolleyRequestHandler
 import com.example.sanic.databinding.ActivityGameBinding
+import com.example.sanic.location.RouteCalculator
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
@@ -52,8 +53,9 @@ class GameActivity : AppCompatActivity() {
     }
 
     private fun startGame(startPoint: Point) {
-        val rndPointGen = RandomPointGenerator(startPoint, PhotonApiManager(VolleyRequestHandler(this)))
-        gameManager = GameManager(this, rndPointGen)
+        val volleyRequestHandler = VolleyRequestHandler(this)
+        val rndPointGen = RandomPointGenerator(startPoint, PhotonApiManager(volleyRequestHandler))
+        gameManager = GameManager(this, rndPointGen, RouteCalculator(volleyRequestHandler))
         gameManager.startGpsUpdates()
         this.openStreetMap = OSMap(binding.map, this, gameManager, startPoint)
         openStreetMap.start()
@@ -143,5 +145,8 @@ class GameActivity : AppCompatActivity() {
         }
     }
 
+    fun getMap() : OSMap {
+        return this.openStreetMap
+    }
 
 }

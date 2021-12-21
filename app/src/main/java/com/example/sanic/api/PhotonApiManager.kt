@@ -16,7 +16,7 @@ class PhotonApiManager(private val requestHandler: RequestHandler) {
             }
         }
 
-        requestHandler.doRequest(url, responseListener)
+        requestHandler.getRequest(url, responseListener)
     }
 
     private fun getValidLocation(response: JSONObject, streetListener: StreetListener)
@@ -140,7 +140,7 @@ class PhotonApiManager(private val requestHandler: RequestHandler) {
                 streetListener.onStreetFound(extractLocation(response))
             }
         }
-        requestHandler.doRequest(url, responseListener)
+        requestHandler.getRequest(url, responseListener)
     }
 
 }
