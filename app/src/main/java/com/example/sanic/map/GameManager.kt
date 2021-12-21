@@ -1,9 +1,11 @@
 package com.example.sanic.map
 
 import android.util.Log
+import androidx.activity.viewModels
 import com.example.sanic.KeyValueStorage
 import com.example.sanic.Point
 import com.example.sanic.R
+import com.example.sanic.ScoreViewModel
 import com.example.sanic.api.ResponseListener
 import com.example.sanic.location.Location
 import com.example.sanic.location.LocationObserver
@@ -18,35 +20,33 @@ import kotlin.concurrent.thread
 import kotlin.math.log
 
 
-class GameManager(
-    private val gameActivity: GameActivity,
-    private val randomPointGenerator: RandomPointGenerator,
-    private val routeCalculator: RouteCalculator
-) : LocationObserver, PointListener, ResponseListener {
+class GameManager(private val gameActivity: GameActivity, private val randomPointGenerator: RandomPointGenerator, private val routeCalculator: RouteCalculator) : LocationObserver, PointListener, ResponseListener {
 
-    init {
-        KeyValueStorage.setValue(gameActivity, R.string.currentscorekey, "0")
-    }
-
+    private  val scoreViewModel: ScoreViewModel by gameActivity.viewModels()
     private val checkPoints: ArrayList<Point> = ArrayList()
     private val geofenceRadius: Int = 15
     private var currentLocation : Point? = null
+
+    fun start()
+    {
+        scoreViewModel.getHighscore().observe(gameActivity, {
+            KeyValueStorage.setValue(gameActivity, R.string.highscorekey, "$it")
+        })
+        startGpsUpdates()
+    }
+
 
     fun startGpsUpdates() {
         generateRandom()
         //TODO get locationmanager to start gps updates
         val location = Location(gameActivity)
         location.start(this)
+        //resetGame()
     }
 
-    private fun endGame()
-    {
-        KeyValueStorage.setValue(gameActivity, R.string.currentscorekey, "0")
-    }
 
     private fun resetGame()
     {
-        endGame()
         KeyValueStorage.setValue(gameActivity, R.string.highscorekey, "0")
     }
 
@@ -125,8 +125,8 @@ class GameManager(
         // Checking if coordinateArray in not null
 
         // Getting the longitude and latitude
-        val longitude = coordinateArray.optDouble(0, 91.0).toDouble()
-        val latitude = coordinateArray.optDouble(1, 91.0).toDouble()
+        val longitude = coordinateArray.optDouble(0, 91.0)
+        val latitude = coordinateArray.optDouble(1, 91.0)
 
         // Checking if the value's are valid (they can never go over 90)
         if (longitude == 91.0 || latitude == 91.0) continue
@@ -164,30 +164,7 @@ class GameManager(
 
 
     private fun updateScore() {
-        var highScore = KeyValueStorage.getValue(gameActivity, R.string.highscorekey)
-        if (highScore == null || highScore.isEmpty())
-            highScore = "0"
-
-        var currentScore = KeyValueStorage.getValue(gameActivity, R.string.currentscorekey)
-        if (currentScore == null || currentScore.isEmpty())
-            currentScore = "0"
-
-        val intHighScore = highScore.toInt()
-        var intCurrentScore = currentScore.toInt()
-        intCurrentScore++
-
-        if (intCurrentScore > intHighScore) {
-            KeyValueStorage.setValue(
-                gameActivity,
-                R.string.highscorekey,
-                intCurrentScore.toString()
-            )
-            Log.i("GameManager", "updateScore new HighScore: $currentScore")
-        }
-
-        KeyValueStorage.setValue(gameActivity, R.string.currentscorekey, intCurrentScore.toString())
-        Log.i("GameManager", "updateScore new CurrentScore: $currentScore")
-
+        scoreViewModel.updateCurrentScore()
     }
 
     override fun onNearLocationEntered(geofence: Geofence?) {
