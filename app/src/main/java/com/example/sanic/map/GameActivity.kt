@@ -9,14 +9,13 @@ import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import androidx.activity.viewModels
 import androidx.annotation.Nullable
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.add
 import androidx.fragment.app.commit
-import com.example.sanic.KeyValueStorage
-import com.example.sanic.Point
-import com.example.sanic.R
-import com.example.sanic.SettingsFragment
+import androidx.lifecycle.Observer
+import com.example.sanic.*
 import com.example.sanic.api.PhotonApiManager
 import com.example.sanic.api.VolleyRequestHandler
 import com.example.sanic.databinding.ActivityGameBinding
@@ -39,6 +38,8 @@ class GameActivity : AppCompatActivity() {
 
     private var pointsUntilGameEnds: Int = 10
 
+    private  val scoreViewModel: ScoreViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityGameBinding.inflate(LayoutInflater.from(this))
@@ -57,9 +58,21 @@ class GameActivity : AppCompatActivity() {
         val volleyRequestHandler = VolleyRequestHandler(this)
         val rndPointGen = RandomPointGenerator(startPoint, PhotonApiManager(volleyRequestHandler))
         gameManager = GameManager(this, rndPointGen, RouteCalculator(volleyRequestHandler))
-        gameManager.startGpsUpdates()
+        gameManager.start()
         this.openStreetMap = OSMap(binding.map, this, gameManager, startPoint)
         openStreetMap.start()
+
+
+
+        scoreViewModel.getCurrentScore().observe(this, {
+            binding.currentScore.text = it.toString()
+        })
+
+        scoreViewModel.getHighscore().observe(this, {
+            binding.highScore.text = it.toString()
+        })
+
+
     }
 
 

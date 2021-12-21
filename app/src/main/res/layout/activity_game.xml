@@ -18,18 +18,6 @@
 
     </org.osmdroid.views.MapView>
 
-    <ImageButton
-        android:id="@+id/imageButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@android:drawable/ic_menu_manage"
-        android:onClick="openSettings"
-        android:contentDescription="@string/settings" />
-
     <Button
         android:id="@+id/stop_button"
         android:layout_width="wrap_content"
@@ -43,6 +31,16 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.95" />
 
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintDimensionRatio="w,1:5"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@android:drawable/screen_background_dark_transparent" />
+
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragmentContainerView2"
         android:layout_width="wrap_content"
@@ -52,5 +50,73 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageButton" />
+
+    <TextView
+        android:id="@+id/textCurrentScore"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:text="@string/currentscore"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="@+id/textView4"
+        app:layout_constraintEnd_toStartOf="@+id/textView4"
+        app:layout_constraintHorizontal_chainStyle="spread_inside"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/textView4" />
+
+    <ImageButton
+        android:id="@+id/imageButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="32dp"
+        android:contentDescription="@string/settings"
+        android:onClick="openSettings"
+        app:layout_constraintBottom_toBottomOf="@+id/textView4"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/textView4"
+        app:layout_constraintTop_toTopOf="@+id/textView4"
+        app:srcCompat="@android:drawable/ic_menu_manage" />
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/highscore"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toStartOf="@+id/imageButton"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/textCurrentScore"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/currentScore"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="@+id/textCurrentScore"
+        app:layout_constraintStart_toStartOf="@+id/textCurrentScore"
+        app:layout_constraintTop_toBottomOf="@+id/textCurrentScore" />
+
+    <TextView
+        android:id="@+id/highScore"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="@+id/textView4"
+        app:layout_constraintStart_toStartOf="@+id/textView4"
+        app:layout_constraintTop_toBottomOf="@+id/textView4" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

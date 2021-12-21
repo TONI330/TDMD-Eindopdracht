@@ -13,7 +13,7 @@ import java.util.*
  */
 class RouteCalculator(private val handler : RequestHandler) {
 
-    private val API_KEY = "5b3ce3597851110001cf624800ca244e157049a5aa73195ec969c0ae"
+    private val API_KEY = "5b3ce3597851110001cf6248b2d4f0a0d87548159de20a849ed50911"
     private val URL =
         "https://api.openrouteservice.org/v2/directions/foot-walking?api_key=$API_KEY"
 
@@ -26,7 +26,6 @@ class RouteCalculator(private val handler : RequestHandler) {
     /**
      * Given a set of waypoints this method uses the Open Route Service to get a route between these
      * points. A list of Points is returned
-     * @param waypointList  The list of waypoints to get a route in between
      */
     fun calculate(start : Point, end : Point, listener: ResponseListener) {
         handler.getRequest(getURL2Points(start, end), listener)
