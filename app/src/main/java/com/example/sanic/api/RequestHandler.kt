@@ -1,5 +1,8 @@
 package com.example.sanic.api
 
+import org.json.JSONObject
+
 interface RequestHandler {
-    fun doRequest(url: String, responeListener: ResponseListener)
+    fun getRequest(url: String, responeListener: ResponseListener)
+    fun postRequest(url: String,jsonObject: JSONObject, responeListener: ResponseListener)
 }
