@@ -30,7 +30,7 @@ class GameManager(
 
     private val checkPoints: ArrayList<Point> = ArrayList()
     private val geofenceRadius: Int = 15
-    private var currentLocation : Point = Point(0.0, 0.0, null)
+    private var currentLocation : Point? = null
 
     fun startGpsUpdates() {
         generateRandom()
@@ -81,26 +81,25 @@ class GameManager(
                 if (checkValid(point)) {
                     tries = 0
                     onPointSucces(point)
-
                 } else {
                     tries++
                     generateRandom()
                 }
             }
-
     }
 
     private fun onPointSucces(point: Point) {
         checkPoints.add(point)
         gameActivity.drawPointOnMap(point)
-        routeCalculator.calculate(currentLocation, point, this)
+        if(currentLocation != null) routeCalculator.calculate(currentLocation!!, point, this)
+        else routeCalculator.calculate(gameActivity.getLastLocationAsPoint(), point, this)
     }
 
     override fun onResponse(response: JSONObject) {
 
         // Try parsing the data to JSON
         try {
-                        // Getting the nested JSON array coordinates
+            // Getting the nested JSON array coordinates
             val coordinatesObject = response
                 .getJSONArray("features")
                 .getJSONObject(0)

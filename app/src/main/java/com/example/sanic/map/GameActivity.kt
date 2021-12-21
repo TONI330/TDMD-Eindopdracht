@@ -3,6 +3,7 @@ package com.example.sanic.map
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
+import android.location.Location
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -12,7 +13,6 @@ import androidx.annotation.Nullable
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.add
 import androidx.fragment.app.commit
-import androidx.fragment.app.replace
 import com.example.sanic.KeyValueStorage
 import com.example.sanic.Point
 import com.example.sanic.R
@@ -30,6 +30,7 @@ import org.osmdroid.util.GeoPoint
 
 class GameActivity : AppCompatActivity() {
 
+    private lateinit var lastLocation : Location
     private var fusedLocationClient: FusedLocationProviderClient? = null
     private lateinit var binding: ActivityGameBinding
 
@@ -68,7 +69,7 @@ class GameActivity : AppCompatActivity() {
         fusedLocationClient!!.lastLocation
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful && task.result != null) {
-                    val lastLocation = task.result
+                    lastLocation = task.result
                     startGame(Point(lastLocation.latitude, lastLocation.longitude, "start"))
                 } else {
                     Log.w("debug", "getLastLocation:exception" + task.exception.toString())
@@ -148,5 +149,11 @@ class GameActivity : AppCompatActivity() {
     fun getMap() : OSMap {
         return this.openStreetMap
     }
+
+    fun getLastLocationAsPoint() : Point {
+        return Point(lastLocation.latitude, lastLocation.longitude, "lastLocation")
+    }
+
+
 
 }
