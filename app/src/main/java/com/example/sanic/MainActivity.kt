@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import com.example.sanic.map.GameActivity
 import android.view.View
+import android.widget.TextView
 import androidx.fragment.app.add
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
@@ -13,21 +14,14 @@ import kotlin.math.log
 
 
 class MainActivity : AppCompatActivity() {
+    private var instructionsVisible: Boolean = true
+    private lateinit var instructionsText: TextView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-//        val requestHandler = VolleyRequestHandler(this)
-//        val photonApiManager = PhotonApiManager(requestHandler)
-//
-//
-//        val point = Point(51.414180,5.514767,"0")
-//
-//        photonApiManager.getClosestStreet(point) {
-//            Log.i("LocationFound", "onCreate: original: $point corrected: $it")
-//        }
-
-
+        //updateSettings()
     }
 
 
@@ -40,14 +34,18 @@ class MainActivity : AppCompatActivity() {
         Log.d("MainActivity", "openSettingMain: ")
         val findFragmentByTag = supportFragmentManager.findFragmentByTag("Settings")
         if (findFragmentByTag != null) {
+            //updateSettings()
             onBackPressed()
             return
         }
         supportFragmentManager.commit {
             replace<SettingsFragment>(R.id.fragmentContainerView, "Settings")
+            //updateSettings()
             setReorderingAllowed(true)
             addToBackStack("null")
         }
     }
+
+
 
 }

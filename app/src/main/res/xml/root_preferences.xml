@@ -1,5 +1,6 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:backgroundTint="@color/theme">
 
     <PreferenceCategory app:title="Game Settings">
         <ListPreference
@@ -9,6 +10,24 @@
             app:title="Points until game ends"
             app:useSimpleSummaryProvider="true" />
 
+
+        <!--        <MultiSelectListPreference-->
+        <!--            android:defaultValue="Stay close"-->
+        <!--            android:entryValues="@array/game_modes"-->
+        <!--            android:key="multi_select_list_preference_1"-->
+        <!--            android:title="Gamemode" />-->
+
+        <ListPreference
+            app:defaultValue="500"
+            app:entries="@array/distances"
+            app:entryValues="@array/distances"
+            app:key="distance"
+            app:title="Radius of checkpoints" />
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="showInstructions"
+            android:title="Show instructions on start screen" />
 
         <!--        <ListPreference-->
         <!--            app:defaultValue="reply"-->

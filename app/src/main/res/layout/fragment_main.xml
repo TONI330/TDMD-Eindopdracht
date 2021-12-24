@@ -34,6 +34,7 @@
         app:layout_constraintVertical_bias="0.60" />
 
     <TextView
+        android:id="@+id/instructionsText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="@string/instructions"

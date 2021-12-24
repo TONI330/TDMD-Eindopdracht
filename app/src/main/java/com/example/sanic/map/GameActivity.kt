@@ -36,7 +36,9 @@ class GameActivity : AppCompatActivity() {
     private lateinit var openStreetMap: OSMap
     private lateinit var gameManager: GameManager
 
+    //Settings variables
     private var pointsUntilGameEnds: Int = 10
+    private var instructionsVisible: Boolean = true
 
     private  val scoreViewModel: ScoreViewModel by viewModels()
 
@@ -135,8 +137,10 @@ class GameActivity : AppCompatActivity() {
     fun drawPointOnMap(point: Point) {
         runOnUiThread {
             point.toGeoPoint().run {
-                openStreetMap.drawCheckPoint(this)
-                Log.d("random", "Point found: $this")
+                if(openStreetMap != null) {
+                    openStreetMap.drawCheckPoint(this)
+                    Log.d("random", "Point found: $this")
+                }
             }
         }
     }
@@ -167,6 +171,14 @@ class GameActivity : AppCompatActivity() {
         return Point(lastLocation.latitude, lastLocation.longitude, "lastLocation")
     }
 
+    private fun updateSettings() {
+        //update instructionsVisible
+        if(KeyValueStorage.getValue(this, "showInstructions").equals("true")) {
+            this.instructionsVisible = true
+            return
+        }
+        this.instructionsVisible = false
 
+    }
 
 }

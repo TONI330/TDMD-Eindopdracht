@@ -22,6 +22,10 @@ import kotlin.math.log
 
 class GameManager(private val gameActivity: GameActivity, private val randomPointGenerator: RandomPointGenerator, private val routeCalculator: RouteCalculator) : LocationObserver, PointListener, ResponseListener {
 
+    //Settings variables
+    private var distance: Int = 500
+
+
     private  val scoreViewModel: ScoreViewModel by gameActivity.viewModels()
     private val checkPoints: ArrayList<Point> = ArrayList()
     private val geofenceRadius: Int = 15
@@ -69,7 +73,7 @@ class GameManager(private val gameActivity: GameActivity, private val randomPoin
     var tries: Int = 0
     fun generateRandom() {
         thread {
-            randomPointGenerator.getRandomSnappedPoint(500.0, this)
+            randomPointGenerator.getRandomSnappedPoint(distance.toDouble(), this)
         }
     }
 
@@ -171,5 +175,8 @@ class GameManager(private val gameActivity: GameActivity, private val randomPoin
         TODO("Not yet implemented")
     }
 
+    private fun updateSettings() {
+
+    }
 
 }
