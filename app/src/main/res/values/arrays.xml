@@ -5,4 +5,17 @@
         <item>"10"</item>
         <item>"25"</item>
     </string-array>
+    <string-array name="difficulty_entries">
+        <item>"50 seconds"</item>
+        <item>"75 seconds"</item>
+        <item>"100 seconds"</item>
+        <item>"125 seconds"</item>
+    </string-array>
+    <string-array name="difficulty_values">
+        <item>"50"</item>
+        <item>"75"</item>
+        <item>"100"</item>
+        <item>"125"</item>
+    </string-array>
+
 </resources>

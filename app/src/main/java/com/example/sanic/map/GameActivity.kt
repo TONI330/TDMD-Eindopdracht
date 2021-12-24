@@ -26,6 +26,7 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.CancellationTokenSource
 import org.osmdroid.api.IGeoPoint
 import org.osmdroid.util.GeoPoint
+import java.util.*
 
 class GameActivity : AppCompatActivity() {
 
@@ -45,7 +46,10 @@ class GameActivity : AppCompatActivity() {
         binding = ActivityGameBinding.inflate(LayoutInflater.from(this))
         setContentView(binding.root)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+        currentLocation()
         getLastLocation()
+
+
     }
 
     override fun onStart() {

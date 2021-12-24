@@ -17,22 +17,23 @@ import org.json.JSONObject
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.concurrent.thread
-import kotlin.math.log
+import kotlin.math.ceil
 
 
 class GameManager(private val gameActivity: GameActivity, private val randomPointGenerator: RandomPointGenerator, private val routeCalculator: RouteCalculator) : LocationObserver, PointListener, ResponseListener {
 
-    private  val scoreViewModel: ScoreViewModel by gameActivity.viewModels()
+    private val scoreViewModel: ScoreViewModel by gameActivity.viewModels()
     private val checkPoints: ArrayList<Point> = ArrayList()
     private val geofenceRadius: Int = 15
-    private var currentLocation : Point? = null
+    private var currentLocation: Point? = null
 
-    fun start()
-    {
+    fun start() {
         scoreViewModel.getHighscore().observe(gameActivity, {
             KeyValueStorage.setValue(gameActivity, R.string.highscorekey, "$it")
         })
         startGpsUpdates()
+
+
     }
 
 
@@ -45,8 +46,7 @@ class GameManager(private val gameActivity: GameActivity, private val randomPoin
     }
 
 
-    private fun resetGame()
-    {
+    private fun resetGame() {
         KeyValueStorage.setValue(gameActivity, R.string.highscorekey, "0")
     }
 
@@ -73,26 +73,54 @@ class GameManager(private val gameActivity: GameActivity, private val randomPoin
         }
     }
 
-    override fun onPointFound(point : Point) {
-            if (tries > 10) {
+    override fun onPointFound(point: Point) {
+        if (tries > 10) {
+            tries = 0
+            tooMuchTries()
+        } else {
+            if (checkValid(point)) {
                 tries = 0
-                tooMuchTries()
+                onPointSucces(point)
             } else {
-                if (checkValid(point)) {
-                    tries = 0
-                    onPointSucces(point)
-                } else {
-                    tries++
-                    generateRandom()
-                }
+                tries++
+                generateRandom()
             }
+        }
     }
 
     private fun onPointSucces(point: Point) {
         checkPoints.add(point)
         gameActivity.drawPointOnMap(point)
-        if(currentLocation != null) routeCalculator.calculate(currentLocation!!, point, this)
+        if (currentLocation != null) routeCalculator.calculate(currentLocation!!, point, this)
         else routeCalculator.calculate(gameActivity.getLastLocationAsPoint(), point, this)
+    }
+
+    private fun setDistanceToNextPoint(distanceInMeters: Double) {
+        // a part is 100 meter
+        val parts = ceil(distanceInMeters / 100.0).toInt()
+        val timePerPart = 85;
+
+        val time: Int = parts * timePerPart
+
+        setTimer(time) {
+            timerTriggered()
+        }
+
+
+    }
+
+    private fun timerTriggered()
+    {
+
+    }
+
+
+    private fun setTimer(delayInSeconds: Int, task: Runnable)
+    {
+        var delayInMillis = delayInSeconds.toLong()
+        delayInMillis *= 1000;
+
+
     }
 
     override fun onResponse(response: JSONObject) {
@@ -100,14 +128,24 @@ class GameManager(private val gameActivity: GameActivity, private val randomPoin
         // Try parsing the data to JSON
         try {
             // Getting the nested JSON array coordinates
-            val coordinatesObject = response
+            val feature = response
                 .getJSONArray("features")
                 .getJSONObject(0)
+
+            val distance = feature
+                .getJSONObject("properties")
+                .getJSONObject("summary")
+                .getDouble("distance")
+            setDistanceToNextPoint(distance)
+
+
+            val coordinatesObject = feature
                 .getJSONObject("geometry")
                 .getJSONArray("coordinates")
 
             // Creating the list of GeoPoints from the JSON array given
             val routePoints = JSONtoPointList(coordinatesObject)
+
 
             // Returning the value's to the listener
             gameActivity.getMap().drawRoute(routePoints)
