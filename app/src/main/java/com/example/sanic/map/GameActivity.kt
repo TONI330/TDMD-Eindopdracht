@@ -37,7 +37,7 @@ class GameActivity : AppCompatActivity() {
     private lateinit var gameManager: GameManager
 
     //Settings variables
-    private var pointsUntilGameEnds: Int = 10
+    //private var pointsUntilGameEnds: Int = 10
     private var instructionsVisible: Boolean = true
 
     private  val scoreViewModel: ScoreViewModel by viewModels()
@@ -47,21 +47,24 @@ class GameActivity : AppCompatActivity() {
         binding = ActivityGameBinding.inflate(LayoutInflater.from(this))
         setContentView(binding.root)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-        getLastLocation()
+//        currentLocation()
+//        getLastLocation()
+
+
+
     }
 
     override fun onStart() {
         super.onStart()
-        pointsUntilGameEnds = KeyValueStorage.getValue(this, "amountOfPoints")?.toInt() ?: 10
-        Log.d("GameActivity", "onCreate: $pointsUntilGameEnds")
+        startGame()
     }
 
-    private fun startGame(startPoint: Point) {
+    private fun startGame() {
         val volleyRequestHandler = VolleyRequestHandler(this)
-        val rndPointGen = RandomPointGenerator(startPoint, PhotonApiManager(volleyRequestHandler))
-        gameManager = GameManager(this, rndPointGen, RouteCalculator(volleyRequestHandler))
+
+        gameManager = GameManager(this,volleyRequestHandler)
         gameManager.start()
-        this.openStreetMap = OSMap(binding.map, this, gameManager, startPoint)
+        this.openStreetMap = OSMap(binding.map, this, gameManager)
         openStreetMap.start()
 
 
@@ -74,65 +77,15 @@ class GameActivity : AppCompatActivity() {
             binding.highScore.text = it.toString()
         })
 
-
+        scoreViewModel.getTimerMillis().observe(this, {
+            val totalSeconds = it / 1000
+            val minutes: Long = totalSeconds / 60
+            val seconds = (totalSeconds % 60)
+            val formatedSeconds = String.format("%02d",seconds)
+            val timeLeft = "$minutes:$formatedSeconds"
+            binding.timeLeft.text = timeLeft
+        })
     }
-
-
-    @SuppressLint("MissingPermission")
-    private fun getLastLocation() {
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-        fusedLocationClient!!.lastLocation
-            .addOnCompleteListener(this) { task ->
-                if (task.isSuccessful && task.result != null) {
-                    lastLocation = task.result
-                    startGame(Point(lastLocation.latitude, lastLocation.longitude, "start"))
-                } else {
-                    Log.w("debug", "getLastLocation:exception" + task.exception.toString())
-                }
-            }
-    }
-
-    fun stopGame(view: View) {
-        finish()
-    }
-
-    @SuppressLint("MissingPermission")
-    @Nullable
-    private fun currentLocation(): IGeoPoint? {
-        if (ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            Log.d("debug", "no permissions")
-
-            return null
-        }
-        Log.d("debug", "getting location..")
-
-        val token = CancellationTokenSource()
-        var locationPoint: IGeoPoint? = null
-        fusedLocationClient?.getCurrentLocation(LocationRequest.PRIORITY_HIGH_ACCURACY, token.token)
-            ?.addOnSuccessListener { location ->
-                locationPoint = GeoPoint(location.latitude, location.longitude)
-            }
-        //Log.d("debug", "Exception: " + currentLocation?.exception)
-
-        //val locationPoint = currentLocation?.result?.let { GeoPoint(it.latitude, currentLocation.result.longitude) }
-        Log.d("debug", "Current location: " + locationPoint.toString())
-        return locationPoint
-    }
-
 
     fun drawPointOnMap(point: Point) {
         runOnUiThread {
@@ -162,6 +115,21 @@ class GameActivity : AppCompatActivity() {
             addToBackStack("null")
         }
     }
+    fun gameOver() {
+        Log.d("MainActivity", "openGameOver: ")
+        val findFragmentByTag = supportFragmentManager.findFragmentByTag("GameOver")
+        if (findFragmentByTag != null) {
+            onBackPressed()
+            return
+        }
+        supportFragmentManager.commit {
+            add<GameOverFragment>(R.id.fragmentContainerView2, "GameOver")
+            setReorderingAllowed(true)
+            addToBackStack("null")
+        }
+    }
+
+
 
     fun getMap() : OSMap {
         return this.openStreetMap

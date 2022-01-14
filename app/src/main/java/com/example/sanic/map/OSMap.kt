@@ -46,16 +46,17 @@ class OSMap {
     private var fusedLocationClient: FusedLocationProviderClient? = null
 
     private var checkPoint : Marker? = null
-    private var startingPoint : Point
 
-    constructor(map: MapView, activity: Activity, mapManager: GameManager, startPoint: Point) {
-        this.startingPoint = startPoint
+    constructor(map: MapView, activity: Activity, mapManager: GameManager) {
         this.mapManager = mapManager
         this.mapView = map
         this.activity = activity
         this.context = activity.applicationContext
     }
 
+    fun setStartingPoint(startingPoint: Point){
+        mapView.controller.setCenter(startingPoint.toGeoPoint())
+    }
 
 
     fun start() {
@@ -84,7 +85,6 @@ class OSMap {
             controller.apply {
                 Log.d("debug", "zooming")
                 setZoom(21.0)
-                setCenter(startingPoint.toGeoPoint())
             }
         }
     }
@@ -100,8 +100,8 @@ class OSMap {
                 context.resources,
                 Bitmap.createScaledBitmap(
                     bitmap,
-                    (48.0 * context.resources.getDisplayMetrics().density).toInt(),
-                    (48.0 * context.resources.getDisplayMetrics().density).toInt(),
+                    (48.0 * context.resources.displayMetrics.density).toInt(),
+                    (48.0 * context.resources.displayMetrics.density).toInt(),
                     true
                 )
             )
@@ -158,6 +158,7 @@ class OSMap {
         mapView.invalidate()
         Log.d("MapActivity", "Points of the route have been drawn")
     }
+
 
 
 }

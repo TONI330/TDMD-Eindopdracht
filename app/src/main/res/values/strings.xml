@@ -23,5 +23,7 @@
     <string name="start_game">Start game</string>
     <string name="currentscore">CurrentScore</string>
     <string name="highscore">Highscore</string>
+    <string name="time_left">time left</string>
+    <string name="gameover">GameOver</string>
     <string name="instructions">When you start the game, you\'ll see a red checkpoint with a marker looking like the one above. You need to run to this marker as fast as you can to get the most points! Or if you\'re lazy, take the bike or car:)</string>
 </resources>
