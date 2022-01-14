@@ -44,7 +44,7 @@ class ScoreViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    private val timerMillis: MutableLiveData<Long> = MutableLiveData(Long.MIN_VALUE)
+    private val timerMillis: MutableLiveData<Long> = MutableLiveData(0L)
 
     fun getTimerMillis(): LiveData<Long>
     {

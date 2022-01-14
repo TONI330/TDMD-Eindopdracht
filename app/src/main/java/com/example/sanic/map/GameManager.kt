@@ -86,7 +86,7 @@ class GameManager(private val gameActivity: GameActivity, private val volleyRequ
     private fun onPointSucces(point: Point) {
         checkPoints.add(point)
         gameActivity.drawPointOnMap(point)
-        if (currentLocation != null) routeCalculator.calculate(currentLocation!!, point, this)
+        if (currentLocation != null) routeCalculator.calculate(currentLocation, point, this)
         else routeCalculator.calculate(gameActivity.getLastLocationAsPoint(), point, this)
     }
 
@@ -97,7 +97,7 @@ class GameManager(private val gameActivity: GameActivity, private val volleyRequ
         Log.d("GameManger", "Pats: $parts")
 
         val value = KeyValueStorage.getValue(gameActivity.baseContext, "secondsMultiplier")
-        val timePerPart = value!!.toInt();
+        val timePerPart = value!!.toInt()
 
         val time: Int = parts * timePerPart
 
@@ -106,7 +106,7 @@ class GameManager(private val gameActivity: GameActivity, private val volleyRequ
 
     private fun timerTriggered()
     {
-        gameOver = true;
+        gameOver = true
         gameActivity.gameOver()
         Log.d("testing", "timerTriggered: ")
     }
@@ -115,7 +115,7 @@ class GameManager(private val gameActivity: GameActivity, private val volleyRequ
     private fun setTimer(delayInSeconds: Int, task: ()->Unit )
     {
         var delayInMillis = delayInSeconds.toLong()
-        delayInMillis *= 1000L;
+        delayInMillis *= 1000L
         timeManager.setTimer(delayInMillis,task)
     }
 
@@ -211,9 +211,9 @@ class GameManager(private val gameActivity: GameActivity, private val volleyRequ
         if (checkPoints.size == 0)
             return
 
-        val distance = geoPoint?.distanceToAsDouble(checkPoints.last().toGeoPoint())
+        val distance = geoPoint.distanceToAsDouble(checkPoints.last().toGeoPoint())
         Log.d("location", "Distance: $distance")
-        if (distance!! <= geofenceRadius) {
+        if (distance <= geofenceRadius) {
             Log.d("location", "Geofence triggered!")
             scoreManager.updateScore()
             generateRandom()

@@ -100,8 +100,8 @@ class OSMap {
                 context.resources,
                 Bitmap.createScaledBitmap(
                     bitmap,
-                    (48.0 * context.resources.getDisplayMetrics().density).toInt(),
-                    (48.0 * context.resources.getDisplayMetrics().density).toInt(),
+                    (48.0 * context.resources.displayMetrics.density).toInt(),
+                    (48.0 * context.resources.displayMetrics.density).toInt(),
                     true
                 )
             )
