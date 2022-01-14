@@ -26,6 +26,9 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.CancellationTokenSource
 import org.osmdroid.api.IGeoPoint
 import org.osmdroid.util.GeoPoint
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 class GameActivity : AppCompatActivity() {
@@ -76,8 +79,16 @@ class GameActivity : AppCompatActivity() {
             binding.highScore.text = it.toString()
         })
 
-
+        scoreViewModel.getTimerMillis().observe(this, {
+            val totalSeconds = it / 1000
+            val minutes: Long = totalSeconds / 60
+            val seconds = (totalSeconds % 60)
+            val formatedSeconds = String.format("%02d",seconds)
+            val timeLeft = "$minutes:$formatedSeconds"
+            binding.timeLeft.text = timeLeft
+        })
     }
+
 
 
     @SuppressLint("MissingPermission")

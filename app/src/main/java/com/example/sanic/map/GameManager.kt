@@ -1,11 +1,9 @@
 package com.example.sanic.map
 
 import android.util.Log
-import androidx.activity.viewModels
 import com.example.sanic.KeyValueStorage
 import com.example.sanic.Point
 import com.example.sanic.R
-import com.example.sanic.ScoreViewModel
 import com.example.sanic.api.ResponseListener
 import com.example.sanic.location.Location
 import com.example.sanic.location.LocationObserver
@@ -14,7 +12,6 @@ import com.google.android.gms.location.Geofence
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
-import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.concurrent.thread
 import kotlin.math.ceil
@@ -22,20 +19,19 @@ import kotlin.math.ceil
 
 class GameManager(private val gameActivity: GameActivity, private val randomPointGenerator: RandomPointGenerator, private val routeCalculator: RouteCalculator) : LocationObserver, PointListener, ResponseListener {
 
-    private val scoreViewModel: ScoreViewModel by gameActivity.viewModels()
+    private val scoreManager: ScoreManager = ScoreManager(gameActivity)
     private val checkPoints: ArrayList<Point> = ArrayList()
     private val geofenceRadius: Int = 15
     private var currentLocation: Point? = null
+    private val timeManager = TimeManager(gameActivity)
+    private var gameLost = false
 
     fun start() {
-        scoreViewModel.getHighscore().observe(gameActivity, {
-            KeyValueStorage.setValue(gameActivity, R.string.highscorekey, "$it")
-        })
+
         startGpsUpdates()
 
 
     }
-
 
     fun startGpsUpdates() {
         generateRandom()
@@ -50,9 +46,6 @@ class GameManager(private val gameActivity: GameActivity, private val randomPoin
         KeyValueStorage.setValue(gameActivity, R.string.highscorekey, "0")
     }
 
-    private fun setNextCheckPoint() {
-        //randomPoint.getRandomPoint(50.0)
-    }
 
     fun checkValid(point: Point): Boolean {
         for (checkPoint in checkPoints) {
@@ -102,25 +95,21 @@ class GameManager(private val gameActivity: GameActivity, private val randomPoin
 
         val time: Int = parts * timePerPart
 
-        setTimer(time) {
-            timerTriggered()
-        }
-
-
+        setTimer(time,::timerTriggered)
     }
 
     private fun timerTriggered()
     {
-
+        gameLost = true;
+        Log.d("testing", "timerTriggered: ")
     }
 
 
-    private fun setTimer(delayInSeconds: Int, task: Runnable)
+    private fun setTimer(delayInSeconds: Int, task: ()->Unit )
     {
         var delayInMillis = delayInSeconds.toLong()
-        delayInMillis *= 1000;
-
-
+        delayInMillis *= 100L;
+        timeManager.setTimer(delayInMillis,task)
     }
 
     override fun onResponse(response: JSONObject) {
@@ -182,6 +171,8 @@ class GameManager(private val gameActivity: GameActivity, private val randomPoin
     }
 
     override fun onLocationUpdate(point: Point?) {
+        if (gameLost) return
+
         if (point != null) {
             currentLocation = point
         }
@@ -195,15 +186,12 @@ class GameManager(private val gameActivity: GameActivity, private val randomPoin
         Log.d("location", "Distance: $distance")
         if (distance!! <= geofenceRadius) {
             Log.d("location", "Geofence triggered!")
-            updateScore()
+            scoreManager.updateScore()
             generateRandom()
         }
     }
 
 
-    private fun updateScore() {
-        scoreViewModel.updateCurrentScore()
-    }
 
     override fun onNearLocationEntered(geofence: Geofence?) {
         TODO("Not yet implemented")
