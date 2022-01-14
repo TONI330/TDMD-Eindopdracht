@@ -88,6 +88,10 @@ class Location(private val context: Context) {
         Log.d("location", "Starting locationupdates")
     }
 
+    fun stop() {
+        fusedLocationClient.removeLocationUpdates(locationCallback)
+    }
+
     init {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
         //PermissionManager permissionManager = new PermissionManager

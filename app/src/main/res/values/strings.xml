@@ -23,4 +23,6 @@
     <string name="start_game">Start game</string>
     <string name="currentscore">CurrentScore</string>
     <string name="highscore">Highscore</string>
+    <string name="time_left">time left</string>
+    <string name="gameover">GameOver</string>
 </resources>

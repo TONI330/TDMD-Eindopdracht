@@ -1,5 +1,6 @@
 package com.example.sanic.location
 
+import android.util.Log
 import com.example.sanic.Point
 import com.example.sanic.api.RequestHandler
 import com.example.sanic.api.ResponseListener
@@ -28,6 +29,8 @@ class RouteCalculator(private val handler : RequestHandler) {
      * points. A list of Points is returned
      */
     fun calculate(start : Point, end : Point, listener: ResponseListener) {
-        handler.getRequest(getURL2Points(start, end), listener)
+        val urL2Points = getURL2Points(start, end)
+        Log.i("RouteCalculator", "urL2Points: $urL2Points")
+        handler.getRequest(urL2Points, listener)
     }
 }

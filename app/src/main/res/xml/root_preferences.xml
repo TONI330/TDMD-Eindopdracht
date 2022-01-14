@@ -3,11 +3,12 @@
 
     <PreferenceCategory app:title="Game Settings">
         <ListPreference
-            app:entries="@array/reply_entries"
-            app:entryValues="@array/reply_entries"
-            app:key="amountOfPoints"
-            app:title="Points until game ends"
-            app:useSimpleSummaryProvider="true" />
+            app:entries="@array/difficulty_entries"
+            app:entryValues="@array/difficulty_values"
+            app:key="secondsMultiplier"
+            app:title="Difficulty"
+            app:useSimpleSummaryProvider="true"
+            />
 
 
         <!--        <ListPreference-->

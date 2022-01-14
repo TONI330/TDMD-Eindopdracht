@@ -21,7 +21,12 @@ object KeyValueStorage {
 
     fun getValue(context: Context, key: String?): String? {
         val sharedPref = PreferenceManager.getDefaultSharedPreferences(context)
-        return sharedPref.getString(key, null)
+        var value = sharedPref.getString(key, null)
+        if (value == null)
+        {
+            value = sharedPref.getInt(key, -1).toString()
+        }
+        return value
     }
 
     fun getValue(context: Context, @StringRes stringID: Int): String? {

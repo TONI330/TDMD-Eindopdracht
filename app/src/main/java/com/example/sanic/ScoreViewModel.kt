@@ -44,5 +44,29 @@ class ScoreViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    private val timerMillis: MutableLiveData<Long> = MutableLiveData(Long.MIN_VALUE)
+
+    fun getTimerMillis(): LiveData<Long>
+    {
+        return timerMillis
+    }
+
+    fun setTimerMillis(newMillis: Long)
+    {
+        timerMillis.value = newMillis
+    }
+
+
+    private val timeUp: MutableLiveData<Boolean> = MutableLiveData(false)
+
+    fun setTimeUp(timeUp: Boolean) {
+        this.timeUp.value = timeUp
+    }
+
+    fun getTimeUp() : LiveData<Boolean>
+    {
+        return timeUp
+    }
+
 
 }
