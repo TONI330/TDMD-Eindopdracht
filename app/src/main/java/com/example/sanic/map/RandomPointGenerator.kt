@@ -6,9 +6,9 @@ import com.example.sanic.api.StreetListener
 import kotlin.math.cos
 import kotlin.math.roundToLong
 
-class RandomPointGenerator(val startingPoint: Point, val api : PhotonApiManager?) {
+class RandomPointGenerator(val api : PhotonApiManager?) {
 
-    fun getRandomPoint(radius: Double) : Point {
+    fun getRandomPoint(startingPoint: Point, radius: Double) : Point {
         var lat : Double = startingPoint.lat + ((Math.random() * (metersToLat(radius) * 2)) - metersToLat(radius))
         var lon : Double = startingPoint.lon + ((Math.random() * (metersToLon(radius, startingPoint.lat) * 2)) - metersToLon(radius, startingPoint.lat))
 
@@ -17,13 +17,13 @@ class RandomPointGenerator(val startingPoint: Point, val api : PhotonApiManager?
         return Point(lat, lon, "random")
     }
 
-    fun getRandomSnappedPoint(radius: Double, pointListener : PointListener) {
-        val randomPoint = getRandomPoint(radius)
+    fun getRandomSnappedPoint( startingPoint: Point ,radius: Double, pointListener : PointListener) {
+        val randomPoint = getRandomPoint(startingPoint,radius)
 
         api?.getClosestStreet(randomPoint,
             StreetListener { point ->
                 if (point == null) {
-                    getRandomSnappedPoint(radius, pointListener)
+                    getRandomSnappedPoint( startingPoint,radius, pointListener)
                     return@StreetListener
                 }
                 pointListener.onPointFound(point)

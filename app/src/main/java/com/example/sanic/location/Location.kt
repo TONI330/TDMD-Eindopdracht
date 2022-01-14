@@ -13,34 +13,13 @@ import com.google.android.gms.location.*
 
 class Location(private val context: Context) {
     private val geofenceBroadcastReceiver: BroadcastReceiver? = null
-    private var fusedLocationClient: FusedLocationProviderClient
+    private var fusedLocationClient: FusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context)
     private var observer: LocationObserver? = null
     fun start(observer: LocationObserver) {
         this.observer = observer
         startLocationUpdates()
     }
 
-    //you must listen to LocationObserver.onLocationUpdate() for the returnvalue of this method
-    @get:SuppressLint("MissingPermission")
-    private val lastLocation: Unit
-        //you must listen to LocationObserver.onLocationUpdate() for the returnvalue of this method
-        get() {
-            fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
-            fusedLocationClient.lastLocation.addOnCompleteListener { task ->
-                if (task.isSuccessful && task.result != null) {
-                    val lastLocation = task.result
-                    observer?.onLocationUpdate(
-                        Point(
-                            lastLocation!!.latitude,
-                            lastLocation.longitude,
-                            null
-                        )
-                    )
-                } else {
-                    Log.w("debug", "getLastLocation:exception" + task.exception)
-                }
-            }
-        }
     private val locationRequest: LocationRequest
         get() {
             val locationRequest = LocationRequest.create()
@@ -90,10 +69,10 @@ class Location(private val context: Context) {
 
     fun stop() {
         fusedLocationClient.removeLocationUpdates(locationCallback)
+        fusedLocationClient.flushLocations()
     }
 
     init {
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
         //PermissionManager permissionManager = new PermissionManager
         //permissionManager.getLocationPermissions()
     }

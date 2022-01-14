@@ -5,6 +5,7 @@ import com.example.sanic.KeyValueStorage
 import com.example.sanic.Point
 import com.example.sanic.R
 import com.example.sanic.api.PhotonApiManager
+import com.example.sanic.api.RequestHandler
 import com.example.sanic.api.ResponseListener
 import com.example.sanic.api.VolleyRequestHandler
 import com.example.sanic.location.Location
@@ -21,7 +22,7 @@ import kotlin.math.ceil
 
 class GameManager(
     private val gameActivity: GameActivity,
-    private val volleyRequestHandler: VolleyRequestHandler
+    private val volleyRequestHandler: RequestHandler
 ) : LocationObserver, PointListener, ResponseListener {
 
     //Settings variables
@@ -33,10 +34,10 @@ class GameManager(
     private lateinit var currentLocation: Point
     private val timeManager = TimeManager(gameActivity)
     private var gameOver = false
-    private var rndPointGen: RandomPointGenerator? = null
+    private var rndPointGen: RandomPointGenerator = RandomPointGenerator(PhotonApiManager(volleyRequestHandler))
     private val routeCalculator: RouteCalculator = RouteCalculator(volleyRequestHandler)
-    private var firstLocationRecieved: Boolean = false
     private val location = Location(gameActivity)
+    private var startLocation:Point? = null
 
 
     fun start() {
@@ -69,12 +70,14 @@ class GameManager(
 
 
     fun generateRandom() {
+        if (startLocation == null) return
         val value = KeyValueStorage.getValue(gameActivity.baseContext, "distance")
         if (value != null) {
             this.distance = value.toInt()
         }
+
         thread {
-            rndPointGen?.getRandomSnappedPoint(distance.toDouble(), this)
+            rndPointGen.getRandomSnappedPoint(this.startLocation!!,distance.toDouble(), this)
         }
     }
     private var tries: Int = 0
@@ -186,8 +189,8 @@ class GameManager(
     }
 
 
-    fun onFirstLocationUpdate(point: Point) {
-        rndPointGen = RandomPointGenerator(point, PhotonApiManager(volleyRequestHandler))
+    private fun onFirstLocationUpdate(point: Point) {
+        startLocation = point
         gameActivity.getMap().setStartingPoint(point)
         generateRandom()
     }
@@ -199,14 +202,8 @@ class GameManager(
             return
         }
 
-
         if (point == null) return
-
-        if (!firstLocationRecieved) {
-            onFirstLocationUpdate(point)
-            firstLocationRecieved = true
-        }
-
+        if (startLocation == null) onFirstLocationUpdate(point)
 
         currentLocation = point
 
@@ -231,6 +228,8 @@ class GameManager(
 
     fun stop() {
         timeManager.cancelTimer()
+        location.stop()
+        volleyRequestHandler.stop()
     }
 
 

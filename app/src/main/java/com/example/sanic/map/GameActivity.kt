@@ -147,4 +147,9 @@ class GameActivity : AppCompatActivity() {
 
     }
 
+    fun stopGame(view: android.view.View) {
+        gameManager.stop()
+        finish()
+    }
+
 }
