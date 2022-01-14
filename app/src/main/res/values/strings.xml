@@ -25,5 +25,5 @@
     <string name="highscore">Highscore</string>
     <string name="time_left">time left</string>
     <string name="gameover">GameOver</string>
-    <string name="instructions">When you start the game, you\'ll see a red checkpoint with a marker looking like the one above. You need to run to this marker as fast as you can to get the most points! Or if you\'re lazy, take the bike or car:)</string>
+    <string name="instructions">When you start the game, you\'ll see a red checkpoint with a marker looking like the one above. You need to get too this marker before the timer ends, if you get too the point the timer resets.</string>
 </resources>

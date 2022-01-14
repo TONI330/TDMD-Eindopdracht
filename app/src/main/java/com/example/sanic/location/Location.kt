@@ -13,12 +13,15 @@ import com.google.android.gms.location.*
 
 class Location(private val context: Context) {
     private val geofenceBroadcastReceiver: BroadcastReceiver? = null
-    private var fusedLocationClient: FusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context)
+    private var fusedLocationClient: FusedLocationProviderClient =
+        LocationServices.getFusedLocationProviderClient(context)
     private var observer: LocationObserver? = null
     fun start(observer: LocationObserver) {
         this.observer = observer
         startLocationUpdates()
     }
+
+    var lastKnowLocation: Point = Point(0.0, 0.0, "")
 
     private val locationRequest: LocationRequest
         get() {
@@ -36,7 +39,9 @@ class Location(private val context: Context) {
 
                 for (location in locationResult.locations) {
                     //Update location to interface
-                    observer?.onLocationUpdate(Point(location.latitude, location.longitude, null))
+                    val point = Point(location.latitude, location.longitude, null)
+                    lastKnowLocation = point
+                    observer?.onLocationUpdate(point)
                 }
             }
         }

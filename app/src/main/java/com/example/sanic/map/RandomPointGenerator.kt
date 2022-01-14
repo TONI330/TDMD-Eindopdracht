@@ -17,7 +17,7 @@ class RandomPointGenerator(val api : PhotonApiManager?) {
         return Point(lat, lon, "random")
     }
 
-    fun getRandomSnappedPoint( startingPoint: Point ,radius: Double, pointListener : PointListener) {
+    fun getRandomSnappedPoint(startingPoint: Point ,radius: Double, pointListener : PointListener) {
         val randomPoint = getRandomPoint(startingPoint,radius)
 
         api?.getClosestStreet(randomPoint,

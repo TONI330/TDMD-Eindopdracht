@@ -4,6 +4,7 @@
 
     <PreferenceCategory app:title="Game Settings">
         <ListPreference
+            android:defaultValue="75"
             app:entries="@array/difficulty_entries"
             app:entryValues="@array/difficulty_values"
             app:key="secondsMultiplier"
@@ -12,47 +13,24 @@
             />
 
 
-        <!--        <MultiSelectListPreference-->
-        <!--            android:defaultValue="Stay close"-->
-        <!--            android:entryValues="@array/game_modes"-->
-        <!--            android:key="multi_select_list_preference_1"-->
-        <!--            android:title="Gamemode" />-->
-
         <ListPreference
             app:defaultValue="500"
             app:entries="@array/distances"
             app:entryValues="@array/distances_values"
             app:key="distance"
-            app:title="Radius of checkpoints" />
+            app:title="Radius of checkpoints"
+            app:useSimpleSummaryProvider="true"
+            />
 
         <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="showInstructions"
-            android:title="Show instructions on start screen" />
-
-        <!--        <ListPreference-->
-        <!--            app:defaultValue="reply"-->
-        <!--            app:entries="@array/reply_entries"-->
-        <!--            app:entryValues="@array/reply_values"-->
-        <!--            app:key="reply"-->
-        <!--            app:title="@string/reply_title"-->
-        <!--            app:useSimpleSummaryProvider="true" />-->
+            android:defaultValue="false"
+            android:key="wanderingMode"
+            android:title="Wandering mode"
+            app:summaryOn="new points are calculated from current position"
+            app:summaryOff="new points are calculated from start position"
+            />
 
     </PreferenceCategory>
 
-    <!--    <PreferenceCategory app:title="@string/sync_header">-->
-
-    <!--        <SwitchPreferenceCompat-->
-    <!--            app:key="sync"-->
-    <!--            app:title="@string/sync_title" />-->
-
-    <!--        <SwitchPreferenceCompat-->
-    <!--            app:dependency="sync"-->
-    <!--            app:key="attachment"-->
-    <!--            app:summaryOff="@string/attachment_summary_off"-->
-    <!--            app:summaryOn="@string/attachment_summary_on"-->
-    <!--            app:title="@string/attachment_title" />-->
-
-    <!--    </PreferenceCategory>-->
 
 </PreferenceScreen>

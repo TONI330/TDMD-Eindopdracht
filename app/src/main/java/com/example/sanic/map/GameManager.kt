@@ -1,6 +1,7 @@
 package com.example.sanic.map
 
 import android.util.Log
+import androidx.preference.PreferenceManager
 import com.example.sanic.KeyValueStorage
 import com.example.sanic.Point
 import com.example.sanic.R
@@ -75,9 +76,13 @@ class GameManager(
         if (value != null) {
             this.distance = value.toInt()
         }
-
+        val boolean = PreferenceManager.getDefaultSharedPreferences(gameActivity.baseContext).getBoolean("wanderingMode", false)
         thread {
-            rndPointGen.getRandomSnappedPoint(this.startLocation!!,distance.toDouble(), this)
+            if (boolean) {
+                rndPointGen.getRandomSnappedPoint(this.location.lastKnowLocation, distance.toDouble(), this)
+            }else{
+                rndPointGen.getRandomSnappedPoint(this.startLocation!!, distance.toDouble(), this)
+            }
         }
     }
     private var tries: Int = 0
@@ -99,8 +104,7 @@ class GameManager(
     private fun onPointSucces(point: Point) {
         checkPoints.add(point)
         gameActivity.drawPointOnMap(point)
-        if (currentLocation != null) routeCalculator.calculate(currentLocation, point, this)
-        else routeCalculator.calculate(gameActivity.getLastLocationAsPoint(), point, this)
+        routeCalculator.calculate(currentLocation, point, this)
     }
 
     private fun setDistanceToNextPoint(distanceInMeters: Double) {
