@@ -24,7 +24,7 @@ class GameManager(private val gameActivity: GameActivity, private val randomPoin
     private val geofenceRadius: Int = 15
     private var currentLocation: Point? = null
     private val timeManager = TimeManager(gameActivity)
-    private var gameLost = false
+    private var gameOver = false
 
     fun start() {
 
@@ -91,7 +91,9 @@ class GameManager(private val gameActivity: GameActivity, private val randomPoin
     private fun setDistanceToNextPoint(distanceInMeters: Double) {
         // a part is 100 meter
         val parts = ceil(distanceInMeters / 100.0).toInt()
-        val timePerPart = 85;
+
+        val value = KeyValueStorage.getValue(gameActivity.baseContext, "secondsMultiplier")
+        val timePerPart = value!!.toInt();
 
         val time: Int = parts * timePerPart
 
@@ -100,7 +102,8 @@ class GameManager(private val gameActivity: GameActivity, private val randomPoin
 
     private fun timerTriggered()
     {
-        gameLost = true;
+        gameOver = true;
+        gameActivity.gameOver()
         Log.d("testing", "timerTriggered: ")
     }
 
@@ -108,7 +111,7 @@ class GameManager(private val gameActivity: GameActivity, private val randomPoin
     private fun setTimer(delayInSeconds: Int, task: ()->Unit )
     {
         var delayInMillis = delayInSeconds.toLong()
-        delayInMillis *= 100L;
+        delayInMillis *= 10L;
         timeManager.setTimer(delayInMillis,task)
     }
 
@@ -171,7 +174,7 @@ class GameManager(private val gameActivity: GameActivity, private val randomPoin
     }
 
     override fun onLocationUpdate(point: Point?) {
-        if (gameLost) return
+        if (gameOver) return
 
         if (point != null) {
             currentLocation = point

@@ -173,6 +173,21 @@ class GameActivity : AppCompatActivity() {
             addToBackStack("null")
         }
     }
+    fun gameOver() {
+        Log.d("MainActivity", "openGameOver: ")
+        val findFragmentByTag = supportFragmentManager.findFragmentByTag("GameOver")
+        if (findFragmentByTag != null) {
+            onBackPressed()
+            return
+        }
+        supportFragmentManager.commit {
+            add<GameOverFragment>(R.id.fragmentContainerView2, "GameOver")
+            setReorderingAllowed(true)
+            addToBackStack("null")
+        }
+    }
+
+
 
     fun getMap() : OSMap {
         return this.openStreetMap
@@ -181,6 +196,7 @@ class GameActivity : AppCompatActivity() {
     fun getLastLocationAsPoint() : Point {
         return Point(lastLocation.latitude, lastLocation.longitude, "lastLocation")
     }
+
 
 
 
