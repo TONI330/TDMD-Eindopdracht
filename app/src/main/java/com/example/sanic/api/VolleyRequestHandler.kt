@@ -3,6 +3,7 @@ package com.example.sanic.api
 import android.content.Context
 import android.util.Log
 import com.android.volley.Request
+import com.android.volley.RequestQueue
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
@@ -35,6 +36,10 @@ class VolleyRequestHandler(context: Context) : RequestHandler {
                 Log.d("henk", "doRequest: ")
             })
         queue.add(jsonObjectRequest)
+    }
+
+    override fun stop() {
+        queue.stop()
     }
 
 }

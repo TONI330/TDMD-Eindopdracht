@@ -5,6 +5,7 @@ import com.example.sanic.KeyValueStorage
 import com.example.sanic.Point
 import com.example.sanic.R
 import com.example.sanic.api.PhotonApiManager
+import com.example.sanic.api.RequestHandler
 import com.example.sanic.api.ResponseListener
 import com.example.sanic.api.VolleyRequestHandler
 import com.example.sanic.location.Location
@@ -19,7 +20,13 @@ import kotlin.concurrent.thread
 import kotlin.math.ceil
 
 
-class GameManager(private val gameActivity: GameActivity, private val volleyRequestHandler: VolleyRequestHandler) : LocationObserver, PointListener, ResponseListener {
+class GameManager(
+    private val gameActivity: GameActivity,
+    private val volleyRequestHandler: RequestHandler
+) : LocationObserver, PointListener, ResponseListener {
+
+    //Settings variables
+    private var distance: Int = 500
 
     private val scoreManager: ScoreManager = ScoreManager(gameActivity)
     private val checkPoints: ArrayList<Point> = ArrayList()
@@ -27,10 +34,10 @@ class GameManager(private val gameActivity: GameActivity, private val volleyRequ
     private lateinit var currentLocation: Point
     private val timeManager = TimeManager(gameActivity)
     private var gameOver = false
-    private var rndPointGen: RandomPointGenerator? = null
+    private var rndPointGen: RandomPointGenerator = RandomPointGenerator(PhotonApiManager(volleyRequestHandler))
     private val routeCalculator: RouteCalculator = RouteCalculator(volleyRequestHandler)
-    private var firstLocationRecieved: Boolean = false
     private val location = Location(gameActivity)
+    private var startLocation:Point? = null
 
 
     fun start() {
@@ -49,7 +56,7 @@ class GameManager(private val gameActivity: GameActivity, private val volleyRequ
     }
 
 
-    fun checkValid(point: Point): Boolean {
+    private fun checkValid(point: Point): Boolean {
         for (checkPoint in checkPoints) {
             if (point.id.equals(checkPoint.id))
                 return false
@@ -57,17 +64,23 @@ class GameManager(private val gameActivity: GameActivity, private val volleyRequ
         return true
     }
 
-    fun tooMuchTries() {
+    private fun tooMuchTries() {
         Log.d("GameManager", "tooMuchTries: ")
     }
 
-    var tries: Int = 0
+
     fun generateRandom() {
+        if (startLocation == null) return
+        val value = KeyValueStorage.getValue(gameActivity.baseContext, "distance")
+        if (value != null) {
+            this.distance = value.toInt()
+        }
+
         thread {
-            rndPointGen?.getRandomSnappedPoint(500.0, this)
+            rndPointGen.getRandomSnappedPoint(this.startLocation!!,distance.toDouble(), this)
         }
     }
-
+    private var tries: Int = 0
     override fun onPointFound(point: Point) {
         if (tries > 10) {
             tries = 0
@@ -101,22 +114,20 @@ class GameManager(private val gameActivity: GameActivity, private val volleyRequ
 
         val time: Int = parts * timePerPart
 
-        setTimer(time,::timerTriggered)
+        setTimer(time, ::timerTriggered)
     }
 
-    private fun timerTriggered()
-    {
+    private fun timerTriggered() {
         gameOver = true
         gameActivity.gameOver()
         Log.d("testing", "timerTriggered: ")
     }
 
 
-    private fun setTimer(delayInSeconds: Int, task: ()->Unit )
-    {
+    private fun setTimer(delayInSeconds: Int, task: () -> Unit) {
         var delayInMillis = delayInSeconds.toLong()
         delayInMillis *= 1000L
-        timeManager.setTimer(delayInMillis,task)
+        timeManager.setTimer(delayInMillis, task)
     }
 
     override fun onResponse(response: JSONObject) {
@@ -152,22 +163,22 @@ class GameManager(private val gameActivity: GameActivity, private val volleyRequ
     }
 
     private fun JSONtoPointList(coordinates: JSONArray): List<Point> {
-    val points: MutableList<Point> = ArrayList()
-    for (i in 0 until coordinates.length()) {
-        val coordinateArray = coordinates.optJSONArray(i) ?: continue
+        val points: MutableList<Point> = ArrayList()
+        for (i in 0 until coordinates.length()) {
+            val coordinateArray = coordinates.optJSONArray(i) ?: continue
 
-        // Checking if coordinateArray in not null
+            // Checking if coordinateArray in not null
 
-        // Getting the longitude and latitude
-        val longitude = coordinateArray.optDouble(0, 91.0)
-        val latitude = coordinateArray.optDouble(1, 91.0)
+            // Getting the longitude and latitude
+            val longitude = coordinateArray.optDouble(0, 91.0)
+            val latitude = coordinateArray.optDouble(1, 91.0)
 
-        // Checking if the value's are valid (they can never go over 90)
-        if (longitude == 91.0 || latitude == 91.0) continue
+            // Checking if the value's are valid (they can never go over 90)
+            if (longitude == 91.0 || latitude == 91.0) continue
 
-        // Creating a GeoPoint based on the latitude and longitude and adding it to the list
-        points.add(Point(latitude, longitude, "route-point"))
-    }
+            // Creating a GeoPoint based on the latitude and longitude and adding it to the list
+            points.add(Point(latitude, longitude, "route-point"))
+        }
 
         // Returning the new list
         return points
@@ -178,31 +189,21 @@ class GameManager(private val gameActivity: GameActivity, private val volleyRequ
     }
 
 
-
-    fun onFirstLocationUpdate(point: Point) {
-        rndPointGen = RandomPointGenerator(point,PhotonApiManager(volleyRequestHandler))
+    private fun onFirstLocationUpdate(point: Point) {
+        startLocation = point
         gameActivity.getMap().setStartingPoint(point)
         generateRandom()
     }
 
 
-
     override fun onLocationUpdate(point: Point?) {
-        if (gameOver)
-        {
+        if (gameOver) {
             location.stop()
             return
         }
 
-
         if (point == null) return
-
-        if (!firstLocationRecieved)
-        {
-            onFirstLocationUpdate(point)
-            firstLocationRecieved = true
-        }
-
+        if (startLocation == null) onFirstLocationUpdate(point)
 
         currentLocation = point
 
@@ -221,13 +222,14 @@ class GameManager(private val gameActivity: GameActivity, private val volleyRequ
     }
 
 
-
     override fun onNearLocationEntered(geofence: Geofence?) {
         TODO("Not yet implemented")
     }
 
     fun stop() {
         timeManager.cancelTimer()
+        location.stop()
+        volleyRequestHandler.stop()
     }
 
 

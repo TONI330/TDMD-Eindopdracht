@@ -32,4 +32,9 @@ object KeyValueStorage {
     fun getValue(context: Context, @StringRes stringID: Int): String? {
         return getValue(context, context.getString(stringID))
     }
+
+    fun getBoolean(context: Context, key: String?) : Boolean? {
+        val sharedPref = PreferenceManager.getDefaultSharedPreferences(context)
+        return sharedPref.getBoolean(key, true)
+    }
 }

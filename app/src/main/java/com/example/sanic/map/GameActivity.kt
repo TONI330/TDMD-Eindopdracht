@@ -26,10 +26,6 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.CancellationTokenSource
 import org.osmdroid.api.IGeoPoint
 import org.osmdroid.util.GeoPoint
-import java.time.Instant
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-import java.util.*
 
 class GameActivity : AppCompatActivity() {
 
@@ -39,6 +35,10 @@ class GameActivity : AppCompatActivity() {
 
     private lateinit var openStreetMap: OSMap
     private lateinit var gameManager: GameManager
+
+    //Settings variables
+    //private var pointsUntilGameEnds: Int = 10
+    private var instructionsVisible: Boolean = true
 
     private  val scoreViewModel: ScoreViewModel by viewModels()
 
@@ -137,7 +137,19 @@ class GameActivity : AppCompatActivity() {
         return Point(lastLocation.latitude, lastLocation.longitude, "lastLocation")
     }
 
+    private fun updateSettings() {
+        //update instructionsVisible
+        if(KeyValueStorage.getValue(this, "showInstructions").equals("true")) {
+            this.instructionsVisible = true
+            return
+        }
+        this.instructionsVisible = false
 
+    }
 
+    fun stopGame(view: android.view.View) {
+        gameManager.stop()
+        finish()
+    }
 
 }
