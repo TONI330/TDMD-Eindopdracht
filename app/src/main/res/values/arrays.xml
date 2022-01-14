@@ -19,10 +19,16 @@
         <item>"Wander away"</item>
     </string-array>
     <string-array name="distances">
+        <item>"300M"</item>
+        <item>"500M"</item>
+        <item>"800M"</item>
+        <item>"1.5KM"</item>
+    </string-array>
+    <string-array name="distances_values">
         <item>"300"</item>
         <item>"500"</item>
         <item>"800"</item>
-        <item>"1.5KM"</item>
+        <item>"1500"</item>
     </string-array>
 
 </resources>

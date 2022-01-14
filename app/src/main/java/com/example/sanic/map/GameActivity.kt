@@ -90,10 +90,8 @@ class GameActivity : AppCompatActivity() {
     fun drawPointOnMap(point: Point) {
         runOnUiThread {
             point.toGeoPoint().run {
-                if(openStreetMap != null) {
-                    openStreetMap.drawCheckPoint(this)
-                    Log.d("random", "Point found: $this")
-                }
+                openStreetMap.drawCheckPoint(this)
+                Log.d("random", "Point found: $this")
             }
         }
     }

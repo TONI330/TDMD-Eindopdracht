@@ -21,7 +21,7 @@
         <ListPreference
             app:defaultValue="500"
             app:entries="@array/distances"
-            app:entryValues="@array/distances"
+            app:entryValues="@array/distances_values"
             app:key="distance"
             app:title="Radius of checkpoints" />
 
