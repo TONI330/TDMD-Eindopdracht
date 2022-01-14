@@ -21,4 +21,13 @@ class ExampleInstrumentedTest {
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
         assertEquals("com.example.sanic", appContext.packageName)
     }
+
+    @Test
+    fun nameTest()
+    {
+        val appContext = InstrumentationRegistry.getInstrumentation().targetContext
+        val stringId: Int = appContext.applicationInfo.labelRes
+        assertEquals(R.string.app_name,stringId)
+
+    }
 }

@@ -9,12 +9,12 @@ class RandomPointGeneratorTest {
     @Test
     fun latInRange() {
         //arrange
-        val testRandomPoint = RandomPointGenerator(Point(50.0, 4.0, "test"))
+        val testRandomPoint = RandomPointGenerator(null)
         var testsFailed = 0
 
         //act
         for (i in 1..100) {
-            testRandomPoint.getRandomPoint(50.0).apply {
+            testRandomPoint.getRandomPoint(Point(50.0, 4.0, "test"),50.0).apply {
                 println("Testpoint $i: $this")
                 testsFailed += latValid(this, 50.0)
             }
@@ -36,7 +36,7 @@ class RandomPointGeneratorTest {
     @Test
     fun lonInRange() {
         //arrange
-        val testRandomPoint = RandomPointGenerator(Point(50.0, 4.0, "test"))
+        val testRandomPoint = RandomPointGenerator(null)
         var testsFailed = 0
 
         //act
@@ -46,7 +46,7 @@ class RandomPointGeneratorTest {
 //                testsFailed += lonValid(point, 50.0)
 //            })
 
-            testRandomPoint.getRandomPoint(50.0).apply{
+            testRandomPoint.getRandomPoint(Point(50.0, 4.0, "test"),50.0).apply{
                 println("Testpoint $i: $this")
                 testsFailed += lonValid(this, 50.0)
             }
@@ -66,5 +66,9 @@ class RandomPointGeneratorTest {
         }
         return 0
     }
+
+
+
+
 
 }
