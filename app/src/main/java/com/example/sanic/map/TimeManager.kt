@@ -9,8 +9,7 @@ import kotlin.math.log
 class TimeManager(private val gameActivity: GameActivity)
 {
     private val scoreViewModel: ScoreViewModel by gameActivity.viewModels()
-    private var timer: GameTimer = GameTimer(scoreViewModel, Long.MAX_VALUE, 1000L) {}
-
+    private var timer: GameTimer = GameTimer(scoreViewModel, Long.MAX_VALUE, Long.MAX_VALUE) {}
 
     fun setTimer(timerMillis: Long, task: () -> Unit) {
         timer.cancel()
@@ -20,6 +19,10 @@ class TimeManager(private val gameActivity: GameActivity)
 
     fun setTimer(timerMillis: Long): Unit {
         setTimer(timerMillis) { scoreViewModel.setTimeUp(true) }
+    }
+
+    fun cancelTimer() {
+        timer.cancel()
     }
 
     class GameTimer(private var scoreViewModel: ScoreViewModel, millisInFuture: Long, countDownInterval: Long,private var task:  () -> Unit) :

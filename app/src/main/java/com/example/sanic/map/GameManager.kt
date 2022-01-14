@@ -4,7 +4,9 @@ import android.util.Log
 import com.example.sanic.KeyValueStorage
 import com.example.sanic.Point
 import com.example.sanic.R
+import com.example.sanic.api.PhotonApiManager
 import com.example.sanic.api.ResponseListener
+import com.example.sanic.api.VolleyRequestHandler
 import com.example.sanic.location.Location
 import com.example.sanic.location.LocationObserver
 import com.example.sanic.location.RouteCalculator
@@ -17,26 +19,26 @@ import kotlin.concurrent.thread
 import kotlin.math.ceil
 
 
-class GameManager(private val gameActivity: GameActivity, private val randomPointGenerator: RandomPointGenerator, private val routeCalculator: RouteCalculator) : LocationObserver, PointListener, ResponseListener {
+class GameManager(private val gameActivity: GameActivity, private val volleyRequestHandler: VolleyRequestHandler) : LocationObserver, PointListener, ResponseListener {
 
     private val scoreManager: ScoreManager = ScoreManager(gameActivity)
     private val checkPoints: ArrayList<Point> = ArrayList()
     private val geofenceRadius: Int = 15
-    private var currentLocation: Point? = null
+    private lateinit var currentLocation: Point
     private val timeManager = TimeManager(gameActivity)
     private var gameOver = false
+    private var rndPointGen: RandomPointGenerator? = null
+    private val routeCalculator: RouteCalculator = RouteCalculator(volleyRequestHandler)
+    private var firstLocationRecieved: Boolean = false
+    private val location = Location(gameActivity)
+
 
     fun start() {
-
         startGpsUpdates()
-
-
     }
 
-    fun startGpsUpdates() {
-        generateRandom()
+    private fun startGpsUpdates() {
         //TODO get locationmanager to start gps updates
-        val location = Location(gameActivity)
         location.start(this)
         //resetGame()
     }
@@ -62,7 +64,7 @@ class GameManager(private val gameActivity: GameActivity, private val randomPoin
     var tries: Int = 0
     fun generateRandom() {
         thread {
-            randomPointGenerator.getRandomSnappedPoint(500.0, this)
+            rndPointGen?.getRandomSnappedPoint(500.0, this)
         }
     }
 
@@ -91,6 +93,8 @@ class GameManager(private val gameActivity: GameActivity, private val randomPoin
     private fun setDistanceToNextPoint(distanceInMeters: Double) {
         // a part is 100 meter
         val parts = ceil(distanceInMeters / 100.0).toInt()
+        Log.d("GameManger", "DistanceToNextPoint: $distanceInMeters")
+        Log.d("GameManger", "Pats: $parts")
 
         val value = KeyValueStorage.getValue(gameActivity.baseContext, "secondsMultiplier")
         val timePerPart = value!!.toInt();
@@ -111,7 +115,7 @@ class GameManager(private val gameActivity: GameActivity, private val randomPoin
     private fun setTimer(delayInSeconds: Int, task: ()->Unit )
     {
         var delayInMillis = delayInSeconds.toLong()
-        delayInMillis *= 10L;
+        delayInMillis *= 1000L;
         timeManager.setTimer(delayInMillis,task)
     }
 
@@ -173,14 +177,36 @@ class GameManager(private val gameActivity: GameActivity, private val randomPoin
         TODO("Not yet implemented")
     }
 
-    override fun onLocationUpdate(point: Point?) {
-        if (gameOver) return
 
-        if (point != null) {
-            currentLocation = point
+
+    fun onFirstLocationUpdate(point: Point) {
+        rndPointGen = RandomPointGenerator(point,PhotonApiManager(volleyRequestHandler))
+        gameActivity.getMap().setStartingPoint(point)
+        generateRandom()
+    }
+
+
+
+    override fun onLocationUpdate(point: Point?) {
+        if (gameOver)
+        {
+            location.stop()
+            return
         }
 
-        val geoPoint = point?.toGeoPoint()
+
+        if (point == null) return
+
+        if (!firstLocationRecieved)
+        {
+            onFirstLocationUpdate(point)
+            firstLocationRecieved = true
+        }
+
+
+        currentLocation = point
+
+        val geoPoint = point.toGeoPoint()
 
         if (checkPoints.size == 0)
             return
@@ -198,6 +224,10 @@ class GameManager(private val gameActivity: GameActivity, private val randomPoin
 
     override fun onNearLocationEntered(geofence: Geofence?) {
         TODO("Not yet implemented")
+    }
+
+    fun stop() {
+        timeManager.cancelTimer()
     }
 
 
