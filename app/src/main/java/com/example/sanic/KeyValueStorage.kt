@@ -19,17 +19,16 @@ object KeyValueStorage {
         return true
     }
 
-    fun getValue(context: Context, key: String?): String? {
+    fun getValue(context: Context, key: String?): String {
         val sharedPref = PreferenceManager.getDefaultSharedPreferences(context)
         var value = sharedPref.getString(key, null)
-        if (value == null)
-        {
-            value = sharedPref.getInt(key, -1).toString()
-        }
+        //this is a shitty hack
+        if (value == null) value = sharedPref.getInt(key, -1).toString()
+        if (value == "-1") value = "";
         return value
     }
 
-    fun getValue(context: Context, @StringRes stringID: Int): String? {
+    fun getValue(context: Context, @StringRes stringID: Int): String {
         return getValue(context, context.getString(stringID))
     }
 

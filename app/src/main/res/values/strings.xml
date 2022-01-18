@@ -26,4 +26,5 @@
     <string name="time_left">time left</string>
     <string name="gameover">GameOver</string>
     <string name="instructions">When you start the game, you\'ll see a red checkpoint with a marker looking like the one above. You need to get too this marker before the timer ends, if you get too the point the timer resets.</string>
+    <string name="testKey">TestKey</string>
 </resources>
